@@ -8,7 +8,7 @@ const Navbar = () => {
             {/* logo */}
             <h2 className='text-[28px] text-black font-bold'>Logo</h2>
             <div>
-                <input type="text" name="search" id="search"  className='bg-gray-300 w-[300px] mt-2 rounded-lg h-[35px] p-4'/>
+                <input type="text" name="search" id="search" placeholder="Find collection or NFT'name" className='bg-gray-300 w-[300px] mt-2 rounded-lg h-[40px]  p-4'/>
             </div>
             {/* nav  */}
             <div className='flex justify-between w-[300px] mt-3 text-gray-500'>
@@ -19,8 +19,7 @@ const Navbar = () => {
         </div>
         {/* button connect */}
         <div>
-        {/* className='bg-white rounded-lg border shadow-lg p-5' */}
-            <ConnectWallet />
+            <ConnectWallet theme="light" />
         </div>
     </div>
   )
