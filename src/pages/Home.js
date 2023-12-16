@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import Card from "../components/Card";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { Link } from "react-router-dom";
+import { useContract, useNFT } from "@thirdweb-dev/react";
 
 const Home = () => {
   const [listings, setListings] = useState([]);
+
+  const { contract, isLoading } = useContract("0x1fe1da2C775c491c40cBF451735495b0F5932B8E");
+
+  const { data: nftDrop, isLoaading, error } = useNFT(contract, 0);
 
   const [nft, setNFT] = useState([]);
 
@@ -37,6 +42,7 @@ const Home = () => {
     
     fetchData();
   }, []); 
+  console.log(nftDrop ? nftDrop : "none")
 
   return (
     <div className="border rounded-lg p-4 m-10 border-black flex gap-5 flex-wrap">

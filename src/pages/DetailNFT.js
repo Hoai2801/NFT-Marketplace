@@ -1,35 +1,50 @@
 import React, { useEffect, useState } from "react";
-import Card from "../components/Card";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { useParams } from "react-router-dom";
 import { useAddress } from "@thirdweb-dev/react";
 import {
   useBuyDirectListing,
   useContract,
-  Web3Button,
+  useCancelDirectListing
 } from "@thirdweb-dev/react";
-
-const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
-
+import { ethers } from "ethers";
+import { LiaHandshake } from "react-icons/lia";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { MdOutlineIosShare } from "react-icons/md";
-
-//  Import component 
-import InforDetail from "../components/InforDetail";
-import BuyDetail from "../components/BuyDetail";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
+import { TbTriangleSquareCircle } from "react-icons/tb";
+import { IoMdCart } from "react-icons/io";
+import { GoTag } from "react-icons/go";
+import axios from "axios";
+const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 
 const DetailNFT = () => {
+  // id of url
+  const { id } = useParams();
   const { contract } = useContract(contractAddress, "marketplace-v3");
   const address = useAddress();
+  const [priceMATIC, setPrice] = useState();
+
+  // listing
+  const [listing, setListing] = useState();
+
+  // conver wei to ether
+  const price = listing ? ethers.utils.formatEther(listing.pricePerToken) : "";
   const {
     mutateAsync: buyDirectListing,
     isLoading,
     error,
   } = useBuyDirectListing(contract);
-  const [nft, setNFT] = useState([]);
-  const [contractNFT, setContractNFT] = useState();
-  const [contractMarket, setContractMarket] = useState();
-  const { id } = useParams();
+
+  const {
+    mutateAsync: cancelDirectListing,
+    isCanelLoading,
+    cancelError,
+  } = useCancelDirectListing(contract);
+
+  const [view, setView] = useState("24");
+  const [fav, setFav] = useState("18");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,69 +53,153 @@ const DetailNFT = () => {
           clientId: "598b4f1195f15842446b09538ba00622",
         });
 
-        // get detail NFT by id 
-
-        const contractNFT = await sdk.getContract(
-          "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
+        // market
+        const contractMarket = await sdk.getContract(
+          "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
         );
-        setContractNFT(contractNFT);
-        
-        // market 
-        const contractMarket = await sdk.getContract("0x5237bcc6f1848CDdF2785a12e1114Cd639895e36");
-        setContractMarket(contractMarket)
 
-        // get nft detail like wei, creater
-        const listing = await contractMarket.directListings.getListing(0);
+        // get listing detail
+        const listing = await contractMarket.directListings.getListing(id);
         // console.log()
-        // console.log(listing)
-        const nfts = await contractNFT.erc1155.get(id);
-        // console.log("nft")
-        // console.log(nfts);
-        setNFT(nfts);
+        console.log(listing);
+        setListing(listing);
+
+        // api get MATIC price
+        const price = await axios.get(
+          "https://api.diadata.org/v1/assetQuotation/Polygon/0x0000000000000000000000000000000000001010"
+        );
+        setPrice(price.data.Price);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    
-    fetchData();
-  }, [id]); 
-  return (
-    <div>
-      <Card />
-      <Web3Button
-      contractAddress={contractAddress}
-      action={() =>
-        buyDirectListing({
-          listingId: nft.metadata.id, 
-          quantity: 1,
-          buyer: address, 
-        })
-      }
-    >
-      Buy Now
-    </Web3Button>
-    <div className='container-master-img-infor '>
 
-      <div className='flex w-full justify-between px-20  '>
-        {/* card-detail */}
-        <CardDetail linkimg={"https://i.seadn.io/s/raw/files/bff97b3df99768968ab76a17207984ee.png?auto=format&dpr=1&w=1000"} />
-        {/* info right */}
-        <div className='col-lg-7  px-3 '>
-          <div className="">
-           
-          <InforDetail />
-          <BuyDetail/>
+    fetchData();
+  }, [id]);
+
+  const BuyNFT = async () => {
+        buyDirectListing({
+          listingId: listing.asset.id, // ID of the listing to buy
+          quantity: "1",
+          buyer: address, // Wallet to buy for
+        })
+  };
+
+  return (
+    <div className="mt-5">
+      <h2 className={`${listing ? "hidden" : ""}`}>Loading</h2>
+      <div className={`container-master-img-infor ${listing ? "" : "hidden"}`}>
+        <div className="flex w-full px-20 gap-5 justify-between">
+          {/* card-detail */}
+          <div className="w-[50%] h-[80vh] rounded-lg overflow-hidden">
+            <img
+              src={`${listing ? listing.asset.image : ""}`}
+              className="w-full h-full object-cover"
+            />
           </div>
-          {/* <div className="d-flex gap-3">
-            <MdOutlineIosShare />
-            <FiMoreHorizontal />
-          </div> */}
+          <div className="flex flex-col  w-full">
+            <div
+              className="d-flex justify-content-between w-full"
+              style={{ width: " 100%" }}
+            >
+              <h2 className="text-decoration-none font-bold text-[52px]">
+                {listing ? listing.asset.name : ""}
+              </h2>
+              <div className="d-flex fs-5 ">
+                <LiaHandshake style={{ color: "#ccc" }} className="cursor" />
+                <MdOutlineIosShare className="me-3 ms-3 cursor" />
+                <FiMoreHorizontal className="cusor" />
+              </div>
+            </div>
+            <h1 className="fs-2 mt-3  fw-semibold">
+              {" "}
+              #{listing ? listing.asset.id : ""}
+            </h1>
+            <span className="fw-semibold">
+              Owned by{" "}
+              <span style={{ color: "#007aff" }}>
+                {listing ? listing.creatorAddress : ""}
+              </span>
+            </span>
+            <div className="d-flex">
+              <div className="d-flex m-3">
+                <FaRegEye className="mt-1 me-2 " />
+                <span> {view} views</span>
+              </div>
+              <div className="d-flex m-3">
+                <FaRegHeart className="mt-1 me-2" />
+                <span>{fav} favorite</span>
+              </div>
+
+              <div className="d-flex m-3">
+                <TbTriangleSquareCircle className="mt-1 me-2" />
+                <span> Art</span>
+              </div>
+            </div>
+            {/* info right */}
+            <div className="col-lg-7 px-3 ">
+              <div className="">
+                <div class="card">
+                  <div class="card-body">
+                    Sale ends 16 tháng 12, 2023 at 7:05 CH
+                    <div className="d-flex">
+                      <div className="m-2">
+                        <div className="text-danger fs-4">00</div>
+                        <span>Hours</span>
+                      </div>
+                      <div className="m-2">
+                        <div className="text-danger fs-4">00</div>
+                        <span>Hours</span>
+                      </div>
+                      <div className="m-2">
+                        <div className="text-danger fs-4">00</div>
+                        <span>Hours</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card-footer">
+                    <div>
+                      <span className="text-secondary">Current price</span>
+                      <div className="d-flex align-items-center gap-3">
+                        <h1 className="fs-3">{price ? price : ""} MATIC</h1>
+                        <span className="text-secondary">
+                          ${price && priceMATIC ? price * priceMATIC : ""}
+                        </span>
+                      </div>
+
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="input-group mb-3">
+                          {listing && listing.creatorAddress ? 
+                          <button onClick={() => cancelDirectListing(listing.asset.id)} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Cancel Listing</button> : 
+                          <button onClick={BuyNFT} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Buy</button>}
+                          
+                            <span
+                              className="input-group-text btn btn-primary  p-2 fs-3"
+                              style={{ marginLeft: "1px" }}
+                              id="basic-addon1"
+                            >
+                              <IoMdCart />
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-6 ">
+                          <div className="btn btn-light  d-flex justify-content-center fs-5 align-items-center">
+                            <GoTag className="me-3" />
+                            Make offer
+                          </div>
+                        </div>
+                        <span className="d-none"> hello</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        {/* <div>#2068</div>
-        <div>Owned by</div>
-        <button onClick={buyNFT}>buy</button> */}
       </div>
-    </div>
     </div>
   );
 };

@@ -24,14 +24,14 @@ const Card = (props) => {
       const shortenedAddress = shortenAddress(props.creatorAddress);
 
   return (
-    <div className='rounded-lg shadow-lg w-[240px] h-[350px] flex items-center flex-col border border-black p-2'>
+    <div className={`rounded-lg shadow-lg w-[240px] h-[350px] flex items-center flex-col border border-black p-2 ${props.quantity == 0 ? "hidden" : ""}`}>
         <div className='h-[70%] w-[95%] rounded-lg overflow-hidden bg-red-400'>
-            <img className='w-full h-full' src={props.img} alt="" />
+            <img className='w-full h-full object-cover' src={props.img} alt="" />
         </div>
         <div className='w-[95%]'>
-            <div className='w-[90%] h-[50px] overflow-hidden'>    
-                <p>by {shortenedAddress}</p>
-                <p className='font-bold'>{props.name}</p>
+            <div className='w-[90%] h-[50px] overflow-hidden flex flex-col'>    
+                <p className='my-0'>by {shortenedAddress}</p>
+                <p className='font-bold my-0'>{props.name}</p>
             </div>
             <div className='border w-[90%] bg-gray-400 h-[60px] rounded-md p-2 text-[14px] bg-opacity-60'>
                 <p className='text-white grid grid-cols-2'>
