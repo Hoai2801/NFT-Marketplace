@@ -56,8 +56,10 @@ const BuyDetail = () => {
                 <div className="btn btn-light  d-flex justify-content-center fs-5 align-items-center">
                 <GoTag className="me-3" />
                     Make offer
+                    
                 </div>
                 </div>
+                <span className="d-none"> hello</span>
             </div>
           </div>
         </div>
