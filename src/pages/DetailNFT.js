@@ -11,6 +11,13 @@ import {
 
 const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 
+import { FiMoreHorizontal } from "react-icons/fi";
+import { MdOutlineIosShare } from "react-icons/md";
+
+//  Import component 
+import InforDetail from "../components/InforDetail";
+import BuyDetail from "../components/BuyDetail";
+
 const DetailNFT = () => {
   const { contract } = useContract(contractAddress, "marketplace-v3");
   const address = useAddress();
@@ -72,6 +79,28 @@ const DetailNFT = () => {
     >
       Buy Now
     </Web3Button>
+    <div className='container-master-img-infor '>
+
+      <div className='flex w-full justify-between px-20  '>
+        {/* card-detail */}
+        <CardDetail linkimg={"https://i.seadn.io/s/raw/files/bff97b3df99768968ab76a17207984ee.png?auto=format&dpr=1&w=1000"} />
+        {/* info right */}
+        <div className='col-lg-7  px-3 '>
+          <div className="">
+           
+          <InforDetail />
+          <BuyDetail/>
+          </div>
+          {/* <div className="d-flex gap-3">
+            <MdOutlineIosShare />
+            <FiMoreHorizontal />
+          </div> */}
+        </div>
+        {/* <div>#2068</div>
+        <div>Owned by</div>
+        <button onClick={buyNFT}>buy</button> */}
+      </div>
+    </div>
     </div>
   );
 };
