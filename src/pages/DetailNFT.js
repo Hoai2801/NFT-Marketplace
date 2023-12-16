@@ -7,6 +7,11 @@ import "../CSS/DetailProduct.css"
 
 import { FiMoreHorizontal } from "react-icons/fi";
 import { MdOutlineIosShare } from "react-icons/md";
+
+//  Import component 
+import InforDetail from "../components/InforDetail";
+import BuyDetail from "../components/BuyDetail";
+
 const DetailNFT = () => {
   const [nft, setNFT] = useState([]);
   const [contractNFT, setContractNFT] = useState();
@@ -59,18 +64,20 @@ const DetailNFT = () => {
         {/* card-detail */}
         <CardDetail linkimg={"https://i.seadn.io/s/raw/files/bff97b3df99768968ab76a17207984ee.png?auto=format&dpr=1&w=1000"} />
         {/* info right */}
-        <div className='col-lg-7  px-3 d-flex justify-between'>
+        <div className='col-lg-7  px-3 '>
           <div className="">
-            <Link to="/" >Descendants of Smurfcat</Link>
+           
+          <InforDetail />
+          <BuyDetail/>
           </div>
-          <div className="d-flex gap-3">
+          {/* <div className="d-flex gap-3">
             <MdOutlineIosShare />
             <FiMoreHorizontal />
-          </div>
+          </div> */}
         </div>
-        <div>#2068</div>
+        {/* <div>#2068</div>
         <div>Owned by</div>
-        <button onClick={buyNFT}>buy</button>
+        <button onClick={buyNFT}>buy</button> */}
       </div>
     </div>
   );
