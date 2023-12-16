@@ -1,12 +1,57 @@
-import React from 'react'
-import Card from '../components/Card'
+import React, { useEffect, useState } from "react";
+import Card from "../components/Card";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { Link } from "react-router-dom";
 
 const Home = () => {
-  return (
-    <div>
-        <Card />
-    </div>
-  )
-}
+  const [listings, setListings] = useState([]);
 
-export default Home
+  const [nft, setNFT] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // If used on the FRONTEND, pass your 'clientId'
+        const sdk = new ThirdwebSDK("mumbai", {
+          clientId: "598b4f1195f15842446b09538ba00622",
+        });
+
+        const contract = await sdk.getContract(
+          "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
+        );
+
+        const fetchedListings = await contract.directListings.getAll();
+        
+        // Update the state with the fetched listings
+        setListings(fetchedListings);
+
+        // NFT
+
+        const contractNFT = await sdk.getContract("0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373");
+        const nfts = await contractNFT.erc1155.getAll();
+        console.log(nfts);
+        setNFT(nfts)
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  return (
+    <div className="border rounded-lg p-4 m-10 border-black flex gap-5 flex-wrap justify-center">
+      {listings.map((listing, index) => (
+        <>
+          <div key={index}>
+            <Link to={`/nft/${index}`} >
+              <Card img={listing.asset.image} name={listing.asset.name} creatorAddress={listing.creatorAddress} price={listing.pricePerToken} />
+            </Link>
+          </div>
+        </>
+      ))}
+    </div>
+  );
+};
+
+export default Home;
