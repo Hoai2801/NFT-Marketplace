@@ -11,7 +11,6 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // If used on the FRONTEND, pass your 'clientId'
         const sdk = new ThirdwebSDK("mumbai", {
           clientId: "598b4f1195f15842446b09538ba00622",
         });
@@ -24,9 +23,9 @@ const Home = () => {
         
         // Update the state with the fetched listings
         setListings(fetchedListings);
-
+        
         // NFT
-
+        
         const contractNFT = await sdk.getContract("0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373");
         const nfts = await contractNFT.erc1155.getAll();
         console.log(nfts);
@@ -35,17 +34,18 @@ const Home = () => {
         console.error("Error fetching data:", error);
       }
     };
-
+    
     fetchData();
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, []); 
 
   return (
-    <div className="border rounded-lg p-4 m-10 border-black flex gap-5 flex-wrap justify-center">
+    <div className="border rounded-lg p-4 m-10 border-black flex gap-5 flex-wrap">
+      <h2 className="font-bold text-[32px] w-full pl-5">Buy NFT</h2>
       {listings.map((listing, index) => (
         <>
           <div key={index}>
             <Link to={`/nft/${index}`} >
-              <Card img={listing.asset.image} name={listing.asset.name} creatorAddress={listing.creatorAddress} price={listing.pricePerToken} />
+              <Card img={listing.asset.image} name={listing.asset.name} creatorAddress={listing.creatorAddress} price={listing.pricePerToken} quantity={listing.quantity} />
             </Link>
           </div>
         </>

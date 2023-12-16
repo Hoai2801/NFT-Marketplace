@@ -34,10 +34,10 @@ const Card = (props) => {
                 <p className='font-bold'>{props.name}</p>
             </div>
             <div className='border w-[90%] bg-gray-400 h-[60px] rounded-md p-2 text-[14px] bg-opacity-60'>
-                <p className='text-[#F4F4F5] grid grid-cols-2'>
+                <p className='text-white grid grid-cols-2'>
                     <div className=''>
-                        Minting
-                        <p>now</p>
+                        Quantity
+                        <p>{props.quantity}</p>
                     </div>
                     <div className='flex flex-col'>
                         Price

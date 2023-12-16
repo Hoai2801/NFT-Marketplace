@@ -3,6 +3,7 @@ import './App.css';
 import Home from './pages/Home';
 import Layout from './pages/Layout';
 import DetailNFT from './pages/DetailNFT';
+import Create from './pages/Create';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Route element={<Layout />} >
         <Route path='/' element={<Home />} />
         <Route path='/nft/:id' element={<DetailNFT />} />
+        <Route path='/create' element={<Create />} />
       </Route>
     </Routes>
   );
