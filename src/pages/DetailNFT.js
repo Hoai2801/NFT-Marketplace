@@ -3,8 +3,6 @@ import Card from "../components/Card";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { useParams } from "react-router-dom";
 import { useAddress } from "@thirdweb-dev/react";
-
-
 import {
   useBuyDirectListing,
   useContract,
@@ -61,6 +59,7 @@ const DetailNFT = () => {
   }, [id]); 
   return (
     <div>
+      <Card />
       <Web3Button
       contractAddress={contractAddress}
       action={() =>

@@ -1,9 +1,11 @@
 import { ConnectWallet } from '@thirdweb-dev/react'
 import React from 'react'
 import { Link } from 'react-router-dom';
+
+import "../CSS/Navbar.css"
 const Navbar = () => {
   return (
-    <div className='flex w-full sticky bg-white top-0 border-b-1 border shadow-lg h-[100px] items-center justify-between px-20'>
+    <div className='flex w-full sticky bg-white top-0 border-b-1 border shadow-lg h-[100px] items-center justify-between px-20 navbar-master'>
         <div className='flex justify-between w-[700px] gap-8'>
             {/* logo */}
             <Link to="/">
