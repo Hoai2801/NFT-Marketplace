@@ -79,11 +79,11 @@ const DetailNFT = () => {
   }, [id]);
 
   const BuyNFT = async () => {
-        buyDirectListing({
-          listingId: listing.asset.id, // ID of the listing to buy
-          quantity: "1",
-          buyer: address, // Wallet to buy for
-        })
+    buyDirectListing({
+      listingId: listing.asset.id, // ID of the listing to buy
+      quantity: "1",
+      buyer: address, // Wallet to buy for
+    })
   };
 
   return (
@@ -169,12 +169,12 @@ const DetailNFT = () => {
                       </div>
 
                       <div className="row">
-                        <div className="col-6">
+                        <div className="col-7">
                           <div className="input-group mb-3">
-                          {listing && listing.creatorAddress ? 
-                          <button onClick={() => cancelDirectListing(listing.asset.id)} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Cancel Listing</button> : 
-                          <button onClick={BuyNFT} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Buy</button>}
-                          
+                            {listing && listing.creatorAddress ?
+                              <button onClick={() => cancelDirectListing(listing.asset.id)} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Cancel Listing</button> :
+                              <button onClick={BuyNFT} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Buy</button>}
+
                             <span
                               className="input-group-text btn btn-primary  p-2 fs-3"
                               style={{ marginLeft: "1px" }}
@@ -184,7 +184,7 @@ const DetailNFT = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="col-6 ">
+                        <div className="col-5 ">
                           <div className="btn btn-light  d-flex justify-content-center fs-5 align-items-center">
                             <GoTag className="me-3" />
                             Make offer

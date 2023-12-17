@@ -1,0 +1,136 @@
+.container-master-1{
+    min-height: 100vh;
+}
+.profile .logo-profile {
+    position: relative;
+    padding: 0;
+    
+}
+
+.container-header {
+    box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.3);
+}
+.container-header img{
+    height: 250px;
+}
+
+.profile-header {
+    background-color: #fff;
+    height: 130px;
+    position: relative;
+}
+@media (max-width:800px) {
+    .profile-header {
+        height: 210px;
+    }
+}
+
+
+.avatar-profile {
+   
+}
+.avatar-profile img{
+    background-color: #ccc;
+    height: 150px;
+    width: 150px;
+    position: relative;
+    border-radius: 50%;
+    top: -61px;
+    left: 88px;
+    border: 4px solid #fff;
+}
+
+@media (max-width:800px) {
+    .avatar-profile {
+        top: -61px;
+        left: 88px;
+    }
+}
+
+@media (max-width:300px) {
+    .avatar-profile {
+        top: -61px;
+        left: 44px;
+    }
+}
+
+
+/* .status-profile {
+    background-color: rgb(94, 225, 94);
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 21px;
+    border: 2px solid #fff;
+} */
+
+.title-profile {
+    position: absolute;
+    top: 10px;
+    left: 300px;
+}
+
+@media (max-width:800px) {
+    .title-profile {
+        top: 110px;
+        left: 36px;
+    }
+}
+
+
+.title-profile .role-profile {
+    background-color: #b9bafa;
+    color: #1579FC;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+
+}
+
+.email-profile {
+    position: absolute;
+    top: 56px;
+    left: 301px;
+}
+
+@media (max-width:800px) {
+    .title-profile {
+        top: 172px;
+        left: 36px;
+    }
+}
+
+
+.container-body {
+    background-color: #FFFEFE;
+    margin-top: 20px;
+    height: fit-content;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.container-body .title-body {
+    border-bottom: 2px solid rgba(205, 201, 201, 0.4);
+}
+.menu-item{
+    display: flex;
+    gap: 1rem;
+
+}
+.menu-item a{
+    display: block;
+    padding: 8px 53px;
+    color: #000;
+    background-color: #ffffff;
+    font-size: 18px;
+    border-radius:8px ;
+}
+.menu-item a:hover{
+    background-color: #F6F6F6;
+}
+.menu-item .options-check{
+    background-color: #F6F6F6;
+    font-weight: 600;
+}
