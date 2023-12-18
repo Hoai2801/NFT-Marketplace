@@ -7,7 +7,7 @@ import {
 } from "@thirdweb-dev/react";
 import React, { useEffect, useState } from "react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
-
+import { Bars } from 'react-loading-icons';
 const Sell = () => {
   const address = useAddress();
 
@@ -89,7 +89,7 @@ const Sell = () => {
               </div>
             );
           })
-        : "loading"}
+        : <Bars/>}
     </div>
   );
 };

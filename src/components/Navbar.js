@@ -5,17 +5,17 @@ import { Link } from 'react-router-dom';
 import "../CSS/Navbar.css"
 const Navbar = () => {
   return (
-    <div className='flex w-full sticky bg-white top-0 border-b-1 border shadow-lg h-[100px] items-center justify-between px-20 navbar-master'>
-        <div className='flex justify-between w-[700px] gap-8'>
+    <div className='flex w-full sticky bg-white top-0  items-center justify-between px-20 navbar-master' style={{borderBottom: "1px solid #E3DBD7"}}>
+        <div className='flex justify-between  gap-20'>
             {/* logo */}
             <Link to="/">
-                <h2 className='text-[28px] text-black font-bold mt-2'>Simple W3</h2>
+                <img src={require("../Img/logomoixoaphonghd.png")} alt=""style={{width:'80px', height:'80px'}}/>
             </Link>
             <div>
                 <input type="text" name="search" id="search" placeholder="Find collection or NFT'name" className='bg-gray-300 w-[300px] mt-2 rounded-lg h-[40px] p-4'/>
             </div>
             {/* nav  */}
-            <div className='flex justify-between w-[300px] mt-3 text-gray-500'>
+            <div className='flex justify-between w-[300px] mt-3 text-gray-500 gap-10 navbar-item'>
                 <Link to="/create">Create</Link>
                 <Link to="/explore">Explore</Link>
                 <Link to="/drops">Drops</Link>

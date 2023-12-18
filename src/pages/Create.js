@@ -61,7 +61,7 @@ const Create = () => {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center h-[90vh]">
       <div>
         <h1 className="text-[42px] font-bold">Create New NFT</h1>
         <div className="border rounded-lg border-gray-400 p-2 flex gap-5 mt-5">
@@ -139,8 +139,11 @@ const Create = () => {
             </label>
           </form>
         </div>
-        <div>Put on marketplace</div>
-        <button onClick={mintNFT}>Mint</button>
+        {/* <div>Put on marketplace</div> */}
+        <div className="flex w-full justify-center mt-5">
+            
+          <button onClick={mintNFT} className="bg-blue-400 rounded-lg p-2 text-white px-5">Mint</button>
+        </div>
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ import axios from "axios";
 import {  Bars } from "react-loading-icons";
 const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 
-const DetailNFT = () => {
+const AutionDetail = () => {
   // get id from the url
   const { id } = useParams();
   const { contract } = useContract(contractAddress, "marketplace-v3");
@@ -189,26 +189,26 @@ const DetailNFT = () => {
             <div className="col-lg-7 px-3 ">
               <div className="">
                 <div className="card">
-                  {/* <div className="card-body">
-                    Sale ends 16 tháng 12, 2023 at 7:05 CH
+                  <div className="card-body">
+                    Aution ends 24 - 12 - 2023 at 7:05 CH
                     <div className="d-flex">
                       <div className="m-2">
-                        <div className="text-danger fs-4">00</div>
+                        <div className="text-danger fs-4">13</div>
                         <span>Hours</span>
                       </div>
                       <div className="m-2">
-                        <div className="text-danger fs-4">00</div>
-                        <span>Hours</span>
+                        <div className="text-danger fs-4">10</div>
+                        <span>Minutes</span>
                       </div>
                       <div className="m-2">
-                        <div className="text-danger fs-4">00</div>
-                        <span>Hours</span>
+                        <div className="text-danger fs-4">32</div>
+                        <span>Second</span>
                       </div>
                     </div>
-                  </div> */}
+                  </div>
                   <div className="card-footer">
                     <div>
-                      <span className="text-secondary d-block mb-4 " style={{fontSize:'18px'}}>Current price</span>
+                      <span className="text-secondary d-block mb-4 " style={{fontSize:'18px'}}>Hightest price</span>
                       <div className="d-flex align-items-center gap-4">
                         <h1 className="fs-3">{price ? price : ""} MATIC</h1>
                         <span className="text-secondary">
@@ -229,24 +229,24 @@ const DetailNFT = () => {
                             ) : (
                               <button
                                 onClick={BuyNFT}
-                                className={`w-[90%] bg-[#0D6EFD] text-white rounded-l-lg cursor-wait  ${listing != null && listing.quantity == 0
+                                className={`w-[90%] bg-[#0D6EFD] text-white rounded-lg h-[45px] font-bold cursor-wait  ${listing != null && listing.quantity == 0
                                   ? " cursor-move"
                                   : ""
                                   }`}
                               >
                                 {listing != null && listing.quantity == 0
                                   ? "Sout out"
-                                  : "Buy"}
+                                  : "Make a bid"}
                               </button>
                             )}
 
-                            <span
+                            {/* <span
                               className="input-group-text btn btn-primary  p-2 fs-3"
                               style={{ marginLeft: "1px" }}
                               id="basic-addon1"
                             >
                               <IoMdCart />
-                            </span>
+                            </span> */}
                 
                           </div>
                         </div>
@@ -263,4 +263,4 @@ const DetailNFT = () => {
   );
 };
 
-export default DetailNFT;
+export default AutionDetail;

@@ -206,16 +206,16 @@ function Account() {
                         </div>
                       </td>
                       <td>{nfts.supply}</td>
-                      <td>
+                      <td className="w-[350px]">
                         <button
                           onClick={() => listNFT(nfts.metadata.id)}
-                          className="border rounded-lg p-2 bg-blue-400"
+                          className="border rounded-lg p-2 bg-blue-400 px-5"
                         >
                           List
                         </button>
                         <button
                           onClick={() => bidNFT(nfts.metadata.id)}
-                          className="border rounded-lg p-2 bg-blue-400"
+                          className="border rounded-lg p-2 bg-red-400 ml-5 px-5"
                         >
                           Aution
                         </button>
