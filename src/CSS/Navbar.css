@@ -2,3 +2,11 @@
     z-index: 9999 !important;
     background-color: #fff;
 }
+.navbar-item a{
+    font-weight: 600;
+    font-size: 18px;
+    color: rgb(151, 151, 151);
+}
+.navbar-item a:hover{
+    color: rgb(89, 87, 87);
+}

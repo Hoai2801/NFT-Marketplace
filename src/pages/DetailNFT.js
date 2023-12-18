@@ -21,6 +21,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import { IoMdCart } from "react-icons/io";
 import axios from "axios";
+import {  Bars } from "react-loading-icons";
 const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 
 const DetailNFT = () => {
@@ -133,7 +134,9 @@ const DetailNFT = () => {
 
   return (
     <div className="mt-5">
-      <h2 className={`${listing ? "hidden" : ""}`}>Loading</h2>
+      <div className={`${listing ? "hidden" : "d-flex justify-content-center align-items-center"}`} style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(1, 1, 1, 0.6)", zIndex: 9999 }}>
+        <Bars/>
+      </div>
       <div className={`container-master-img-infor ${listing ? "" : "hidden"}`}>
         <div className="flex w-full px-20 gap-5 justify-between">
           {/* card-detail */}
@@ -205,8 +208,8 @@ const DetailNFT = () => {
                   </div> */}
                   <div className="card-footer">
                     <div>
-                      <span className="text-secondary">Current price</span>
-                      <div className="d-flex align-items-center gap-3">
+                      <span className="text-secondary d-block mb-4 " style={{fontSize:'18px'}}>Current price</span>
+                      <div className="d-flex align-items-center gap-4">
                         <h1 className="fs-3">{price ? price : ""} MATIC</h1>
                         <span className="text-secondary">
                           ${price && priceMATIC ? price * priceMATIC : ""}
@@ -214,8 +217,8 @@ const DetailNFT = () => {
                       </div>
 
                       <div className="row">
-                        <div className="col-6">
-                          <div className="input-group mb-3 w-full">
+                        <div className="col-12">
+                          <div className="input-group mb-3 w-full mt-4 ">
                             {listing && listing.creatorAddress === address ? (
                               <button
                                 onClick={() => cancelDirectListing(listing.id)}
@@ -226,11 +229,10 @@ const DetailNFT = () => {
                             ) : (
                               <button
                                 onClick={BuyNFT}
-                                className={`w-[80%] bg-[#0D6EFD] text-white rounded-l-lg cursor-wait ${
-                                  listing != null && listing.quantity == 0
-                                    ? " cursor-move"
-                                    : ""
-                                }`}
+                                className={`w-[90%] bg-[#0D6EFD] text-white rounded-l-lg cursor-wait  ${listing != null && listing.quantity == 0
+                                  ? " cursor-move"
+                                  : ""
+                                  }`}
                               >
                                 {listing != null && listing.quantity == 0
                                   ? "Sout out"
@@ -245,7 +247,7 @@ const DetailNFT = () => {
                             >
                               <IoMdCart />
                             </span>
-                            <button onClick={mintNFT}>Button</button>
+                
                           </div>
                         </div>
                       </div>
