@@ -9,7 +9,7 @@ const Navbar = () => {
         <div className='flex justify-between w-[700px] gap-8'>
             {/* logo */}
             <Link to="/">
-                <h2 className='text-[28px] text-black font-bold mt-2'>Logo</h2>
+                <h2 className='text-[28px] text-black font-bold mt-2'>Simple W3</h2>
             </Link>
             <div>
                 <input type="text" name="search" id="search" placeholder="Find collection or NFT'name" className='bg-gray-300 w-[300px] mt-2 rounded-lg h-[40px] p-4'/>
@@ -19,7 +19,7 @@ const Navbar = () => {
                 <Link to="/create">Create</Link>
                 <Link to="/explore">Explore</Link>
                 <Link to="/drops">Drops</Link>
-                <Link to="/sell">Sell</Link>
+                <Link to="/account">Account</Link>
             </div>
         </div>
         {/* button connect */}
