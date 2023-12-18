@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { useParams } from "react-router-dom";
-import { useAddress } from "@thirdweb-dev/react";
+import {
+  metamaskWallet,
+  useAddress,
+  useConnect,
+  useSigner,
+} from "@thirdweb-dev/react";
 import {
   useBuyDirectListing,
   useContract,
-  useCancelDirectListing
+  useCancelDirectListing,
 } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import { LiaHandshake } from "react-icons/lia";
@@ -15,12 +20,11 @@ import { FaRegEye } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import { IoMdCart } from "react-icons/io";
-import { GoTag } from "react-icons/go";
 import axios from "axios";
 const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 
 const DetailNFT = () => {
-  // id of url
+  // get id from the url
   const { id } = useParams();
   const { contract } = useContract(contractAddress, "marketplace-v3");
   const address = useAddress();
@@ -37,6 +41,7 @@ const DetailNFT = () => {
     error,
   } = useBuyDirectListing(contract);
 
+  // cancel the derect listing
   const {
     mutateAsync: cancelDirectListing,
     isCanelLoading,
@@ -69,7 +74,6 @@ const DetailNFT = () => {
           "https://api.diadata.org/v1/assetQuotation/Polygon/0x0000000000000000000000000000000000001010"
         );
         setPrice(price.data.Price);
-
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -78,12 +82,53 @@ const DetailNFT = () => {
     fetchData();
   }, [id]);
 
+  // buy the nft
   const BuyNFT = async () => {
-        buyDirectListing({
-          listingId: listing.asset.id, // ID of the listing to buy
-          quantity: "1",
-          buyer: address, // Wallet to buy for
-        })
+    if (address == null) {
+      await connectWallet();
+    } else {
+      buyDirectListing({
+        listingId: listing.asset.id, // ID of the listing to buy
+        quantity: "1",
+        buyer: address, // Wallet to buy for
+      });
+    }
+  };
+  // function to connect the metamask
+  const connect = useConnect();
+  const signer = useSigner();
+  const mintNFT = async () => {
+    try {
+      const sdk = new ThirdwebSDK(signer, "mumbai", {
+        clientId: "598b4f1195f15842446b09538ba00622",
+      });
+
+      const contract = await sdk.getContract(
+        "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
+      );
+      const metadata = {
+        name: "name",
+        description: "description",
+        image: "https://images.unsplash.com/photo-1702611120121-e03dafc14150?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1fHx8ZW58MHx8fHx8", // This can be an image url or file
+      };
+      const toAddress = "0xBDBA9d8889C6acFC3cEE850DC6DE393B01989D07";
+
+      const metadataWithSupply = {
+        metadata,
+        supply: 1000, // The number of this NFT you want to mint
+      };
+
+      const tx = await contract.erc1155.mintTo(toAddress, metadataWithSupply);
+      const receipt = tx.receipt; // the transaction receipt
+      const tokenId = tx.id; // the id of the NFT minted
+      const nft = await tx.data(); // (optional) fetch details of minted NFT
+    } catch (err) {
+      console.error("contract call failure", err);
+    }
+  };
+
+  const connectWallet = async () => {
+    await connect(metamaskWallet());
   };
 
   return (
@@ -114,7 +159,7 @@ const DetailNFT = () => {
             </div>
             <h1 className="fs-2 mt-3  fw-semibold">
               {" "}
-              #{listing ? listing.asset.id : ""}
+              #{listing ? listing.id : ""}
             </h1>
             <span className="fw-semibold">
               Owned by{" "}
@@ -140,8 +185,8 @@ const DetailNFT = () => {
             {/* info right */}
             <div className="col-lg-7 px-3 ">
               <div className="">
-                <div class="card">
-                  <div class="card-body">
+                <div className="card">
+                  {/* <div className="card-body">
                     Sale ends 16 tháng 12, 2023 at 7:05 CH
                     <div className="d-flex">
                       <div className="m-2">
@@ -157,7 +202,7 @@ const DetailNFT = () => {
                         <span>Hours</span>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="card-footer">
                     <div>
                       <span className="text-secondary">Current price</span>
@@ -170,11 +215,29 @@ const DetailNFT = () => {
 
                       <div className="row">
                         <div className="col-6">
-                          <div className="input-group mb-3">
-                          {listing && listing.creatorAddress ? 
-                          <button onClick={() => cancelDirectListing(listing.asset.id)} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Cancel Listing</button> : 
-                          <button onClick={BuyNFT} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Buy</button>}
-                          
+                          <div className="input-group mb-3 w-full">
+                            {listing && listing.creatorAddress === address ? (
+                              <button
+                                onClick={() => cancelDirectListing(listing.id)}
+                                className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg"
+                              >
+                                Cancel Listing
+                              </button>
+                            ) : (
+                              <button
+                                onClick={BuyNFT}
+                                className={`w-[80%] bg-[#0D6EFD] text-white rounded-l-lg cursor-wait ${
+                                  listing != null && listing.quantity == 0
+                                    ? " cursor-move"
+                                    : ""
+                                }`}
+                              >
+                                {listing != null && listing.quantity == 0
+                                  ? "Sout out"
+                                  : "Buy"}
+                              </button>
+                            )}
+
                             <span
                               className="input-group-text btn btn-primary  p-2 fs-3"
                               style={{ marginLeft: "1px" }}
@@ -182,15 +245,9 @@ const DetailNFT = () => {
                             >
                               <IoMdCart />
                             </span>
+                            <button onClick={mintNFT}>Button</button>
                           </div>
                         </div>
-                        <div className="col-6 ">
-                          <div className="btn btn-light  d-flex justify-content-center fs-5 align-items-center">
-                            <GoTag className="me-3" />
-                            Make offer
-                          </div>
-                        </div>
-                        <span className="d-none"> hello</span>
                       </div>
                     </div>
                   </div>

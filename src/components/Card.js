@@ -7,6 +7,15 @@ const Card = (props) => {
         const ethAmount = wei / 1e18; // 1 ether = 1e18 wei
         return ethAmount;
     };
+
+    // status to word
+    const changeStatus = (numberOfStatus) => {
+        if (numberOfStatus === 4) return "Active";
+        if (numberOfStatus === 3) return "Cancel";
+        if (numberOfStatus === 2) return "Completed";
+    }
+
+    const status = changeStatus(props.status)
     // store the eth price from wei
     const ethAmount = convertWeiToEth(props.price);
 
@@ -24,7 +33,7 @@ const Card = (props) => {
       const shortenedAddress = shortenAddress(props.creatorAddress);
 
   return (
-    <div className={`rounded-lg shadow-lg w-[240px] h-[350px] flex items-center flex-col border border-black p-2 ${props.quantity == 0 ? "hidden" : ""}`}>
+    <div className={`rounded-lg shadow-lg w-[240px] h-[350px] flex items-center flex-col border border-black p-2`}>
         <div className='h-[70%] w-[95%] rounded-lg overflow-hidden bg-red-400'>
             <img className='w-full h-full object-cover' src={props.img} alt="" />
         </div>
@@ -36,8 +45,8 @@ const Card = (props) => {
             <div className='border w-[90%] bg-gray-400 h-[60px] rounded-md p-2 text-[14px] bg-opacity-60'>
                 <p className='text-white grid grid-cols-2'>
                     <div className=''>
-                        Quantity
-                        <p>{props.quantity}</p>
+                        Status
+                        <p>{status}</p>
                     </div>
                     <div className='flex flex-col'>
                         Price

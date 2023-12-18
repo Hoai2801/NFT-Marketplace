@@ -1,11 +1,25 @@
 import React, { useState } from "react";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useContract, useContractWrite, useSigner } from "@thirdweb-dev/react";
 import { useMetamask } from "@thirdweb-dev/react";
 
 const Create = () => {
+  // const signer = new ethers.providers.Web3Provider(window.ethereum).getSigner();
+  const signer = useSigner();
+
   const address = useAddress();
 
   const connectWithMetamask = useMetamask();
+  const { contract, isLoading } = useContract("0xEcC15845c668c8E5Bd6CF6fF39aF8C5E916D30f4");
+  const { mutateAsync: lazyMint, isLazyLoading } = useContractWrite(contract, "lazyMint")
+
+  const mintNFT = async () => {
+    try {
+      const data = await lazyMint({ args: [1, "hello", []]});
+      console.info("contract call successs", data);
+    } catch (err) {
+      console.error("contract call failure", err);
+    }
+  };
 
   // shorten the address of wallet
   const shortenAddress = (address) => {
@@ -42,6 +56,7 @@ const Create = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    console.log(file);
     setSelectedFile(file);
   };
 
@@ -57,12 +72,10 @@ const Create = () => {
             />
           </div>
           <p className="mt-3">
-            {shortenedAddress !== null
-              ? shortenedAddress
-              : "You are not connect"}
+            {address != null ? shortenedAddress : "You are not connect"}
           </p>
           <div className="bg-gray-200 items-center justify-end flex h-fit mt-1 p-2 rounded-lg ">
-            <div className={`${address !== null ? "" : "hidden"}`}>
+            <div className={`${address != null ? "" : "hidden"}`}>
               Connected
             </div>
             <button
@@ -117,7 +130,7 @@ const Create = () => {
               />
             </label>
             <label>
-                Initial Supply <span className="text-orange-400">*</span>
+              Initial Supply <span className="text-orange-400">*</span>
               <input
                 value={supply}
                 onChange={handleSupplyChange}
@@ -127,6 +140,7 @@ const Create = () => {
           </form>
         </div>
         <div>Put on marketplace</div>
+        <button onClick={mintNFT}>Mint</button>
       </div>
     </div>
   );

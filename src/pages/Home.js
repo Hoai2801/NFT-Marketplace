@@ -42,16 +42,17 @@ const Home = () => {
     
     fetchData();
   }, []); 
-  console.log(nftDrop ? nftDrop : "none")
+
+  console.log(listings)
 
   return (
     <div className="border rounded-lg p-4 m-10 border-black flex gap-5 flex-wrap">
       <h2 className="font-bold text-[32px] w-full pl-5">Buy NFT</h2>
       {listings.map((listing, index) => (
         <>
-          <div key={index}>
+          <div key={index} className={listing.status == 3 ? "hidden" : ""}>
             <Link to={`/nft/${index}`} >
-              <Card img={listing.asset.image} name={listing.asset.name} creatorAddress={listing.creatorAddress} price={listing.pricePerToken} quantity={listing.quantity} />
+              <Card img={listing.asset.image} name={listing.asset.name} creatorAddress={listing.creatorAddress} price={listing.pricePerToken} status={listing.status} />
             </Link>
           </div>
         </>

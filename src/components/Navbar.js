@@ -19,6 +19,7 @@ const Navbar = () => {
                 <Link to="/create">Create</Link>
                 <Link to="/explore">Explore</Link>
                 <Link to="/drops">Drops</Link>
+                <Link to="/sell">Sell</Link>
             </div>
         </div>
         {/* button connect */}
