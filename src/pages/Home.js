@@ -6,6 +6,7 @@ import { useContract, useNFT } from "@thirdweb-dev/react";
 
 const Home = () => {
   const [listings, setListings] = useState([]);
+  const [aution, setAution] = useState([]);
 
   const { contract, isLoading } = useContract("0x1fe1da2C775c491c40cBF451735495b0F5932B8E");
 
@@ -33,8 +34,11 @@ const Home = () => {
         
         const contractNFT = await sdk.getContract("0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373");
         const nfts = await contractNFT.erc1155.getAll();
-        console.log(nfts);
         setNFT(nfts)
+        
+        // Aution
+        const auctions = await contract.englishAuctions.getAllValid();
+        setAution(auctions)
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -43,10 +47,13 @@ const Home = () => {
     fetchData();
   }, []); 
 
-  console.log(listings)
+  // console.log(listings)
+  // console.log(aution)
+  console.log(nft)
 
   return (
-    <div className="border rounded-lg p-4 m-10 border-black flex gap-5 flex-wrap">
+    <div>
+        <div className="border rounded-lg p-4 m-10 border-black flex gap-5 flex-wrap">
       <h2 className="font-bold text-[32px] w-full pl-5">Buy NFT</h2>
       {listings.map((listing, index) => (
         <>
@@ -57,6 +64,19 @@ const Home = () => {
           </div>
         </>
       ))}
+    </div>
+    <div className="border rounded-lg p-4 m-10 border-black flex gap-5 flex-wrap">
+      <h2 className="font-bold text-[32px] w-full pl-5">Aution NFT</h2>
+      {aution.map((listing, index) => (
+        <>
+          <div key={index} className={listing.status == 3 ? "hidden" : ""}>
+            <Link to={`/nft/${index}`} >
+              <Card img={listing.asset.image} name={listing.asset.name} creatorAddress={listing.creatorAddress} price={listing.pricePerToken} status={listing.status} />
+            </Link>
+          </div>
+        </>
+      ))}
+    </div>
     </div>
   );
 };
