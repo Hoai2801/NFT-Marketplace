@@ -84,6 +84,7 @@ const DetailNFT = () => {
 
   // buy the nft
   const BuyNFT = async () => {
+<<<<<<< HEAD
     if (address == null) {
       await connectWallet();
     } else {
@@ -129,6 +130,13 @@ const DetailNFT = () => {
 
   const connectWallet = async () => {
     await connect(metamaskWallet());
+=======
+    buyDirectListing({
+      listingId: listing.asset.id, // ID of the listing to buy
+      quantity: "1",
+      buyer: address, // Wallet to buy for
+    })
+>>>>>>> 8e1fa685d335cedd507673f2feefa2466eb92fa6
   };
 
   return (
@@ -214,6 +222,7 @@ const DetailNFT = () => {
                       </div>
 
                       <div className="row">
+<<<<<<< HEAD
                         <div className="col-6">
                           <div className="input-group mb-3 w-full">
                             {listing && listing.creatorAddress === address ? (
@@ -237,6 +246,13 @@ const DetailNFT = () => {
                                   : "Buy"}
                               </button>
                             )}
+=======
+                        <div className="col-7">
+                          <div className="input-group mb-3">
+                            {listing && listing.creatorAddress ?
+                              <button onClick={() => cancelDirectListing(listing.asset.id)} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Cancel Listing</button> :
+                              <button onClick={BuyNFT} className="w-[80%] bg-[#0D6EFD] text-white rounded-l-lg">Buy</button>}
+>>>>>>> 8e1fa685d335cedd507673f2feefa2466eb92fa6
 
                             <span
                               className="input-group-text btn btn-primary  p-2 fs-3"
@@ -248,6 +264,16 @@ const DetailNFT = () => {
                             <button onClick={mintNFT}>Button</button>
                           </div>
                         </div>
+<<<<<<< HEAD
+=======
+                        <div className="col-5 ">
+                          <div className="btn btn-light  d-flex justify-content-center fs-5 align-items-center">
+                            <GoTag className="me-3" />
+                            Make offer
+                          </div>
+                        </div>
+                        <span className="d-none"> hello</span>
+>>>>>>> 8e1fa685d335cedd507673f2feefa2466eb92fa6
                       </div>
                     </div>
                   </div>
