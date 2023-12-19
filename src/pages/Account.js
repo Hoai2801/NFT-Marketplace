@@ -3,7 +3,10 @@ import { Row, Col } from "react-bootstrap";
 import "../CSS/Account.css";
 import { BsCopy } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
-
+import { LuPlus } from "react-icons/lu";
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 import {
   useContract,
   useOwnedNFTs,
@@ -15,7 +18,7 @@ import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 // import  useLocation from 'react-router-dom';
 function Account() {
   const inputString = useAddress();
-  const truncatedString = inputString? `${inputString.substring(0, 4)}...${inputString.slice(
+  const truncatedString = inputString ? `${inputString.substring(0, 4)}...${inputString.slice(
     -4
   )}` : "";
   const [option, setOption] = useState("nft");
@@ -114,7 +117,15 @@ function Account() {
     };
     const tx = await contractMarket.englishAuctions.createAuction(auction);
   };
+  const [showForm1, setShowForm] = useState(false);
 
+  const showForm = () => {
+    setShowForm(!showForm1);
+  }
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   return (
     <section className="container-master-1">
       <Row className="container-header">
@@ -126,7 +137,7 @@ function Account() {
         <Col lg={12} className="profile-header">
           <div className="avatar-profile">
             <div className="status-profile"></div>
-            <img src={require(`../Img/avatar2.png`)} alt="" />
+            <img src={require(`../Img/avatar1.webp`)} alt="" />
           </div>
           <section className="title-profile">
             <div className="fs-3 d-inline-block me-4">Unnamed</div>
@@ -191,80 +202,188 @@ function Account() {
           </thead>
           {option === "nft" && nfts
             ? nfts.map((nfts) => {
-                return (
-                  <tbody>
-                    <tr className="align-middle">
-                      <th scope="row">{nfts.metadata.id}</th>
-                      <td>{nfts.metadata.name}</td>
-                      <td>
-                        <div className="w-[150px] h-[150px] overflow-hidden rounded-lg">
-                          <img
-                            src={nfts.metadata.image}
-                            alt=""
-                            className=" object-cover"
-                          />
-                        </div>
-                      </td>
-                      <td>{nfts.supply}</td>
-                      <td className="w-[350px]">
-                        <button
-                          onClick={() => listNFT(nfts.metadata.id)}
-                          className="border rounded-lg p-2 bg-blue-400 px-5"
-                        >
-                          List
-                        </button>
-                        <button
-                          onClick={() => bidNFT(nfts.metadata.id)}
-                          className="border rounded-lg p-2 bg-red-400 ml-5 px-5"
-                        >
-                          Aution
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                );
-              })
+              return (
+                <tbody>
+                  <tr className="align-middle">
+                    <th scope="row">{nfts.metadata.id}</th>
+                    <td>{nfts.metadata.name}</td>
+                    <td>
+                      <div className="w-[150px] h-[150px] overflow-hidden rounded-lg">
+                        <img
+                          src={nfts.metadata.image}
+                          alt=""
+                          className=" object-cover"
+                        />
+                      </div>
+                    </td>
+                    <td>{nfts.supply}</td>
+                    <td className="w-[350px]">
+                      <button
+                        onClick={() => listNFT(nfts.metadata.id)}
+                        className="border rounded-lg p-2 bg-blue-400 px-5"
+                      >
+                        List
+                      </button>
+                      <button
+                        onClick={() => bidNFT(nfts.metadata.id)}
+                        className="border rounded-lg p-2 bg-red-400 ml-5 px-5"
+                      >
+                        Aution
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              );
+            })
             : "Loading"}
         </table>
+        {/* List */}
         {option === "list" && (
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>list</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-              </tr>
-            </tbody>
-          </table>
+          <>
+            <div className="d-flex flex-row-reverse">
+              <Button variant="primary" onClick={handleShow} className="btn-primary btn d-flex items-center p-3">
+                <span><LuPlus /> </span><span>Create Direct Listing</span>
+              </Button>
+            </div>
+
+            <Modal show={show} onHide={handleClose} className="mt-[100px]">
+              <Modal.Header closeButton>
+                <Modal.Title>Create Direct Listing</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Listing Currency <span className="text-[red]">*</span></Form.Label>
+                    <Form.Select aria-label="">
+                      <option>Open this select menu</option>
+                      <option value="1">MATIC (MATIC)</option>
+                    </Form.Select>
+                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The currency you want to sell yours tokens for.</span>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Listing Price<span className="text-[red]">*</span></Form.Label>
+                    <Form.Control aria-label="" type="text" placeholder="0"></Form.Control>
+                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The price per token a buyer can pay to instantly buyout the auction.</span>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Quantity <span className="text-[red]">*</span></Form.Label>
+                    <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
+                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The number of tokens to list for sale</span>
+                  </Form.Group>
+                </Form>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={handleClose}>
+                  Create Direct Listing
+                </Button>
+              </Modal.Footer>
+            </Modal>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">First</th>
+                  <th scope="col">Last</th>
+                  <th scope="col">Handle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>list</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                </tr>
+              </tbody>
+            </table>
+          </>
         )}
+        {/* Auction */}
         {option === "auc" && (
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>1</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-              </tr>
-            </tbody>
-          </table>
+          <>
+            <div className="d-flex flex-row-reverse">
+              <Button variant="primary" onClick={handleShow} className="btn-primary btn d-flex items-center p-3">
+                <span><LuPlus /> </span><span>Create Auction</span>
+              </Button>
+            </div>
+
+            <Modal show={show} onHide={handleClose} className="mt-[100px]">
+              <Modal.Header closeButton>
+                <Modal.Title>Create Action New</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Listing Currency <span className="text-[red]">*</span></Form.Label>
+                    <Form.Select aria-label="">
+                      <option>Open this select menu</option>
+                      <option value="1">MATIC (MATIC)</option>
+                    </Form.Select>
+                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The currency you want to sell yours tokens for.</span>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Buyout Price Per Token <span className="text-[red]">*</span></Form.Label>
+                    <Form.Control aria-label="" type="text" placeholder="0"></Form.Control>
+                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The price per token a buyer can pay to instantly buyout the auction.</span>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Quantity <span className="text-[red]">*</span></Form.Label>
+                    <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
+                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The number of tokens to list for sale</span>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Reserve Price Per Token<span className="text-[red]">*</span></Form.Label>
+                    <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
+                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The minimum price per token necessary to bid on this auction.</span>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Label>Auction Duration<span className="text-[red]">*</span></Form.Label>
+                      <Form.Select aria-label="">
+                        <option>Open this select </option>
+                        <option value="1">1 Hour</option>
+                        <option value="2">1 Day</option>
+                        <option value="3">3 Days</option>
+                        <option value="3">7 Days</option>
+                        <option value="3">1 Month</option>
+                      </Form.Select>
+                      <span className="" style={{ fontSize: '14px ', color: "gray" }}>The duration of this aution.</span>
+                    </Form.Group>
+                  </Form.Group>
+                </Form>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={handleClose}>
+                  Create Auction
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">First</th>
+                  <th scope="col">Last</th>
+                  <th scope="col">Handle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>1</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                </tr>
+              </tbody>
+            </table>
+          </>
         )}
         <div>
           {/* {nfts
