@@ -98,7 +98,7 @@ const Home = () => {
           {auction.map((listing, index) => (
             <>
               <div key={index} className={listing.status == 3 ? "hidden" : ""}>
-                <Link to={`/aution/${index}`}>
+                <Link to={`/aution/${listing.id}`}>
                   <Auction
                     id={listing.id}
                     img={listing.asset.image}

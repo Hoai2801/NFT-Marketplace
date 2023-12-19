@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { useParams } from "react-router-dom";
 import {
+  Web3Button,
   metamaskWallet,
   useAddress,
   useConnect,
+  useContractWrite,
+  useMakeBid,
   useSigner,
 } from "@thirdweb-dev/react";
 import {
@@ -12,7 +15,7 @@ import {
   useContract,
   useCancelDirectListing,
 } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { LiaHandshake } from "react-icons/lia";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { MdOutlineIosShare } from "react-icons/md";
@@ -26,7 +29,6 @@ const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 const AutionDetail = () => {
   // get id from the url
   const { id } = useParams();
-  const { contract } = useContract(contractAddress, "marketplace-v3");
   const address = useAddress();
   const [priceMATIC, setPrice] = useState();
 
@@ -45,25 +47,10 @@ const AutionDetail = () => {
   // listing
   const [listing, setListing] = useState();
 
-  // conver wei to ether
-  const price = listing
-    ? ethers.utils.formatEther(listing.buyoutBidAmount)
-    : "";
-  const {
-    mutateAsync: buyDirectListing,
-    isLoading,
-    error,
-  } = useBuyDirectListing(contract);
-
-  // cancel the derect listing
-  const {
-    mutateAsync: cancelDirectListing,
-    isCanelLoading,
-    cancelError,
-  } = useCancelDirectListing(contract);
-
   const [view, setView] = useState("24");
   const [fav, setFav] = useState("18");
+
+  const signer = useSigner();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,7 +72,7 @@ const AutionDetail = () => {
         const winningBid = await contractMarket.englishAuctions.getWinningBid(
           id
         );
-        console.log(winningBid)
+        // console.log(winningBid);
         setWinningBid(winningBid);
 
         setListing(auction);
@@ -104,7 +91,7 @@ const AutionDetail = () => {
     };
 
     fetchData();
-  }, [id, secondsRemaining]);
+  }, [id, secondsRemaining, countdown, signer]);
 
   // convert second to date
   function convertSecondsToDate(seconds) {
@@ -113,7 +100,7 @@ const AutionDetail = () => {
 
     // Lấy năm, tháng và ngày
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; // Tháng được đánh chỉ mục từ 0, vì vậy hãy thêm 1
+    const month = date.getMonth() + 1; 
     const day = date.getDate();
 
     setDays(day);
@@ -121,71 +108,69 @@ const AutionDetail = () => {
     setYears(year);
   }
 
+  const cancelAuction = async() => {
+    const sdk = new ThirdwebSDK(signer, "mumbai", {
+      clientId: "598b4f1195f15842446b09538ba00622",
+    });
+
+    const contract = await sdk.getContract("0x5237bcc6f1848CDdF2785a12e1114Cd639895e36");
+
+    await contract.englishAuctions.cancelAuction(id);
+  }
+
   // buy the nft
-  const BuyNFT = async () => {
-    if (address == null) {
-      await connectWallet();
-    } else {
-      buyDirectListing({
-        listingId: listing.asset.id, // ID of the listing to buy
-        quantity: "1",
-        buyer: address, // Wallet to buy for
-      });
-    }
-  };
+  // const BuyNFT = async () => {
+  //   if (address == null) {
+  //     await connectWallet();
+  //   } else {
+  //     buyDirectListing({
+  //       listingId: listing.asset.id, // ID of the listing to buy
+  //       quantity: "1",
+  //       buyer: address, // Wallet to buy for
+  //     });
+  //   }
+  // };
   // function to connect the metamask
   const connect = useConnect();
-  const signer = useSigner();
-  const mintNFT = async () => {
+
+
+  // make a bid 
+  const bidAuction = async () => {
     try {
       const sdk = new ThirdwebSDK(signer, "mumbai", {
         clientId: "598b4f1195f15842446b09538ba00622",
       });
+  
+      const contract = await sdk.getContract("0x5237bcc6f1848CDdF2785a12e1114Cd639895e36");
 
-      const contract = await sdk.getContract(
-        "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
-      );
-      const metadata = {
-        name: "name",
-        description: "description",
-        image:
-          "https://images.unsplash.com/photo-1702611120121-e03dafc14150?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1fHx8ZW58MHx8fHx8", // This can be an image url or file
-      };
-      const toAddress = "0xBDBA9d8889C6acFC3cEE850DC6DE393B01989D07";
-
-      const metadataWithSupply = {
-        metadata,
-        supply: 1000, // The number of this NFT you want to mint
-      };
-
-      const tx = await contract.erc1155.mintTo(toAddress, metadataWithSupply);
-      const receipt = tx.receipt; // the transaction receipt
-      const tokenId = tx.id; // the id of the NFT minted
-      const nft = await tx.data(); // (optional) fetch details of minted NFT
+      await contract.englishAuctions.makeBid(id, 0.1);
     } catch (err) {
       console.error("contract call failure", err);
     }
   };
 
   function countdown(endTimeInSeconds) {
-    // Tạo đối tượng Date từ dấu thời gian theo giây
+    // Create date object from timestamp
     const endTime = new Date(endTimeInSeconds * 1000);
 
-    // Lấy thời gian hiện tại
+    // Get current time
     const now = new Date();
 
-    // Tính toán thời gian còn lại
+    // Calculate remaining time
     const timeRemaining = endTime.getTime() - now.getTime();
 
-    // Chuyển đổi thời gian còn lại thành giờ, phút và giây
-    const hoursRemaining = Math.floor(timeRemaining / (60 * 60));
-    const minutesRemaining = Math.floor((timeRemaining % (60 * 60)) / 60);
-    const secondsRemaining = timeRemaining % 60;
+    // Convert remaining time to hours, minutes, and seconds
+    const hours = Math.floor(timeRemaining / (60 * 60 * 1000));
+    const minutes = Math.floor((timeRemaining % (60 * 60 * 1000)) / (60 * 1000));
+    const seconds = Math.floor((timeRemaining % (60 * 1000)) / 1000);
 
-    // Trả về các giá trị thời gian còn lại
-    setHours(hoursRemaining);
-    setMinutes(minutesRemaining);
-    setSeconds(secondsRemaining);
+    // Update state with calculated values
+    setHours(hours);
+    setMinutes(minutes);
+    setSeconds(seconds);
+
+    // Update countdown every second
+    setTimeout(() => countdown(endTimeInSeconds), 1000);
   }
 
   const connectWallet = async () => {
@@ -291,37 +276,44 @@ const AutionDetail = () => {
                         className="text-secondary d-block mb-4 font-bold"
                         style={{ fontSize: "18px" }}
                       >
-                        Hightest bid belong to <span className="text-orange-400">{winningBid ? winningBid.bidderAddress : "nobody"} </span>
+                        Hightest bid belong to{" "}
+                        <span className="text-orange-400">
+                          {winningBid ? winningBid.bidderAddress : "nobody"}{" "}
+                        </span>
                       </span>
                       <div className="d-flex align-items-center gap-4">
-                        <h1 className="fs-3">{winningBid ? winningBid.bidAmount / 1e18 : "0"} MATIC</h1>
+                        <h1 className="fs-3">
+                          {winningBid ? winningBid.bidAmount / 1e18 : "0"} MATIC
+                        </h1>
                         <span className="text-secondary">
-                          ${winningBid && priceMATIC ? winningBid.bidAmount / 1e18 * priceMATIC : ""}
+                          $
+                          {winningBid && priceMATIC
+                            ? (winningBid.bidAmount / 1e18) * priceMATIC
+                            : "0"}
                         </span>
                       </div>
-
                       <div className="row">
                         <div className="col-12">
                           <div className="input-group mb-3 w-full mt-4 flex justify-center">
                             {listing && listing.creatorAddress === address ? (
                               <button
-                                onClick={() => cancelDirectListing(listing.id)}
+                                onClick={() => cancelAuction()}
                                 className="w-[90%] bg-[#0D6EFD] text-white rounded-lg h-[45px] font-bold"
                               >
                                 Cancel Auction
                               </button>
                             ) : (
                               <button
-                                onClick={BuyNFT}
+                                onClick={bidAuction}
                                 className={`w-[90%] bg-[#0D6EFD] text-white rounded-lg h-[45px] font-bold cursor-wait  ${
                                   listing != null && listing.quantity == 0
                                     ? "cursor-move"
                                     : ""
                                 }`}
                               >
-                                Make a bid
+                                Make a bid with {listing ? (winningBid.bidAmount / 1e18 + listing.minimumBidAmount / 1e18) : 0}
                               </button>
-                            )}
+                              )}
                           </div>
                         </div>
                       </div>
