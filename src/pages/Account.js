@@ -123,9 +123,12 @@ function Account() {
     setShowForm(!showForm1);
   }
   const [show, setShow] = useState(false);
+  const [show2, setShow2] = useState(false);
 
   const handleClose = () => setShow(false);
+  const handleClose2 = () => setShow2(false);
   const handleShow = () => setShow(true);
+  const handleShow2 = () => setShow2(true);
   return (
     <section className="container-master-1">
       <Row className="container-header">
@@ -186,8 +189,108 @@ function Account() {
             >
               Auction
             </Link>
+
           </div>
         </div>
+        <div className="d-flex flex-row-reverse mt-3 gap-3">
+          <Button variant="primary" onClick={handleShow} className="btn-primary btn d-flex items-center p-2">
+            <span><LuPlus /> </span><span>Create Direct Listing</span>
+          </Button>
+          <Button variant="primary" onClick={handleShow2} className="btn-primary btn d-flex items-center p-2">
+            <span><LuPlus /> </span><span>Create Auction</span>
+          </Button>
+        </div>
+        {/* ========================Create Direct Listing============================ */}
+        <Modal show={show} onHide={handleClose} className="mt-[100px]">
+          <Modal.Header closeButton>
+            <Modal.Title>Create Direct Listing</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Listing Currency <span className="text-[red]">*</span></Form.Label>
+                <Form.Select aria-label="">
+                  <option>Open this select menu</option>
+                  <option value="1">MATIC (MATIC)</option>
+                </Form.Select>
+                <span className="" style={{ fontSize: '14px ', color: "gray" }}>The currency you want to sell yours tokens for.</span>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Listing Price<span className="text-[red]">*</span></Form.Label>
+                <Form.Control aria-label="" type="text" placeholder="0"></Form.Control>
+                <span className="" style={{ fontSize: '14px ', color: "gray" }}>The price per token a buyer can pay to instantly buyout the auction.</span>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Quantity <span className="text-[red]">*</span></Form.Label>
+                <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
+                <span className="" style={{ fontSize: '14px ', color: "gray" }}>The number of tokens to list for sale</span>
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleClose}>
+              Create Direct Listing
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        {/*========================Create Auction===============================*/}
+        <Modal show={show2} onHide={handleClose2} className="mt-[100px]">
+          <Modal.Header closeButton>
+            <Modal.Title>Create Auction New</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Listing Currency <span className="text-[red]">*</span></Form.Label>
+                <Form.Select aria-label="">
+                  <option>Open this select menu</option>
+                  <option value="1">MATIC (MATIC)</option>
+                </Form.Select>
+                <span className="" style={{ fontSize: '14px ', color: "gray" }}>The currency you want to sell yours tokens for.</span>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Buyout Price Per Token <span className="text-[red]">*</span></Form.Label>
+                <Form.Control aria-label="" type="text" placeholder="0"></Form.Control>
+                <span className="" style={{ fontSize: '14px ', color: "gray" }}>The price per token a buyer can pay to instantly buyout the auction.</span>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Quantity <span className="text-[red]">*</span></Form.Label>
+                <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
+                <span className="" style={{ fontSize: '14px ', color: "gray" }}>The number of tokens to list for sale</span>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Reserve Price Per Token<span className="text-[red]">*</span></Form.Label>
+                <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
+                <span className="" style={{ fontSize: '14px ', color: "gray" }}>The minimum price per token necessary to bid on this auction.</span>
+              </Form.Group>
+              <Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Auction Duration<span className="text-[red]">*</span></Form.Label>
+                  <Form.Select aria-label="">
+                    <option>Open this select </option>
+                    <option value="1">1 Hour</option>
+                    <option value="2">1 Day</option>
+                    <option value="3">3 Days</option>
+                    <option value="3">7 Days</option>
+                    <option value="3">1 Month</option>
+                  </Form.Select>
+                  <span className="" style={{ fontSize: '14px ', color: "gray" }}>The duration of this aution.</span>
+                </Form.Group>
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose2}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleClose2}>
+              Create Auction
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
       <div className="px-20 mt-5">
         <table className="table">
@@ -197,7 +300,6 @@ function Account() {
               <th scope="col">Name</th>
               <th scope="col">Image</th>
               <th scope="col">Supply</th>
-              <th scope="col">Action</th>
             </tr>
           </thead>
           {option === "nft" && nfts
@@ -240,47 +342,7 @@ function Account() {
         {/* List */}
         {option === "list" && (
           <>
-            <div className="d-flex flex-row-reverse">
-              <Button variant="primary" onClick={handleShow} className="btn-primary btn d-flex items-center p-3">
-                <span><LuPlus /> </span><span>Create Direct Listing</span>
-              </Button>
-            </div>
 
-            <Modal show={show} onHide={handleClose} className="mt-[100px]">
-              <Modal.Header closeButton>
-                <Modal.Title>Create Direct Listing</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Listing Currency <span className="text-[red]">*</span></Form.Label>
-                    <Form.Select aria-label="">
-                      <option>Open this select menu</option>
-                      <option value="1">MATIC (MATIC)</option>
-                    </Form.Select>
-                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The currency you want to sell yours tokens for.</span>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Listing Price<span className="text-[red]">*</span></Form.Label>
-                    <Form.Control aria-label="" type="text" placeholder="0"></Form.Control>
-                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The price per token a buyer can pay to instantly buyout the auction.</span>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Quantity <span className="text-[red]">*</span></Form.Label>
-                    <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
-                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The number of tokens to list for sale</span>
-                  </Form.Group>
-                </Form>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                  Cancel
-                </Button>
-                <Button variant="primary" onClick={handleClose}>
-                  Create Direct Listing
-                </Button>
-              </Modal.Footer>
-            </Modal>
             <table className="table">
               <thead>
                 <tr>
@@ -304,67 +366,6 @@ function Account() {
         {/* Auction */}
         {option === "auc" && (
           <>
-            <div className="d-flex flex-row-reverse">
-              <Button variant="primary" onClick={handleShow} className="btn-primary btn d-flex items-center p-3">
-                <span><LuPlus /> </span><span>Create Auction</span>
-              </Button>
-            </div>
-
-            <Modal show={show} onHide={handleClose} className="mt-[100px]">
-              <Modal.Header closeButton>
-                <Modal.Title>Create Action New</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Listing Currency <span className="text-[red]">*</span></Form.Label>
-                    <Form.Select aria-label="">
-                      <option>Open this select menu</option>
-                      <option value="1">MATIC (MATIC)</option>
-                    </Form.Select>
-                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The currency you want to sell yours tokens for.</span>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Buyout Price Per Token <span className="text-[red]">*</span></Form.Label>
-                    <Form.Control aria-label="" type="text" placeholder="0"></Form.Control>
-                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The price per token a buyer can pay to instantly buyout the auction.</span>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Quantity <span className="text-[red]">*</span></Form.Label>
-                    <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
-                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The number of tokens to list for sale</span>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Reserve Price Per Token<span className="text-[red]">*</span></Form.Label>
-                    <Form.Control aria-label="" type="text" placeholder="1"></Form.Control>
-                    <span className="" style={{ fontSize: '14px ', color: "gray" }}>The minimum price per token necessary to bid on this auction.</span>
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                      <Form.Label>Auction Duration<span className="text-[red]">*</span></Form.Label>
-                      <Form.Select aria-label="">
-                        <option>Open this select </option>
-                        <option value="1">1 Hour</option>
-                        <option value="2">1 Day</option>
-                        <option value="3">3 Days</option>
-                        <option value="3">7 Days</option>
-                        <option value="3">1 Month</option>
-                      </Form.Select>
-                      <span className="" style={{ fontSize: '14px ', color: "gray" }}>The duration of this aution.</span>
-                    </Form.Group>
-                  </Form.Group>
-                </Form>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                  Cancel
-                </Button>
-                <Button variant="primary" onClick={handleClose}>
-                  Create Auction
-                </Button>
-              </Modal.Footer>
-            </Modal>
-
             <table className="table">
               <thead>
                 <tr>
