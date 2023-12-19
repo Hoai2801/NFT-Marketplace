@@ -18,7 +18,15 @@ import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import Card from "../components/Card";
 import Auction from "../components/Auction";
 // import  useLocation from 'react-router-dom';
+import { Alchemy, Network } from "alchemy-sdk";
+
 function Account() {
+  const config = {
+    apiKey: "ZEIgYqZicvI84G_XlfzAu1YU6sdqJGOo",
+    network: Network.MATIC_MUMBAI,
+  };
+  const [newNFT, setNewNFT] = useState();
+  const alchemy = new Alchemy(config);
   // const inputString = useAddress();
   const inputString = useParams().id;
 
@@ -47,15 +55,13 @@ function Account() {
   const { contract } = useContract(
     "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
   );
-  const {
-    data: nfts,
-    isLoading,
-    error,
-  } = useOwnedNFTs(contract, inputString, { start: 0, count: 100 });
+
 
   const signer = useSigner();
   useEffect(() => {
     const effectData = async () => {
+      const nfts = await alchemy.nft.getNftsForOwner(inputString);
+      setNewNFT(nfts.ownedNfts)
       // sdk and contract address of marketplace v3
       const sdk = new ThirdwebSDK("mumbai", {
         clientId: "598b4f1195f15842446b09538ba00622",
@@ -69,8 +75,8 @@ function Account() {
       setAuction(auctions)
     };
     effectData();
-  }, []);
-  console.log(listings);
+  }, [inputString]);
+  console.log(newNFT ? newNFT : "");
 
   const listNFT = async (id) => {
     const sdk = new ThirdwebSDK(signer, "mumbai", {
@@ -127,7 +133,7 @@ function Account() {
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
 
-  console.log(nfts);
+  // console.log(nfts);
 
   const handleClose = () => setShow(false);
   const handleClose2 = () => setShow2(false);
@@ -393,21 +399,22 @@ function Account() {
       <div className="px-20 mt-5">
 
         {/* show nft of account */}
-        <div className={`${option === "nft" ? "" : "hidden"} w-full flex gap-3`}>
-          {option === "nft" && nfts
-            ? nfts.map((nft) => {
+        <div className={`${option === "nft" ? "" : "hidden"} w-full flex gap-3 flex-wrap`}>
+          {option === "nft" && newNFT
+            ? newNFT.map((nft) => {
                 return (
-                  <div className="rounded-lg w-[250px] bg-[#7f7777] overflow-hidden">
-                    <div className="h-[250px] w-full overflow-hidden">
+                  <div className="rounded-lg w-[250px] bg-slate-800 overflow-hidden">
+                    <div className="h-[250px] w-full overflow-hidden bg-slate-300">
                       <img
-                        src={nft.metadata.image}
+                        src={nft.image.pngUrl}
                         alt=""
                         className="w-full p-0"
                       />
                     </div>
-                    <div className="h-[80px] w-full pl-5 text-white ">
-                      <p>{nft.metadata.name}</p>
-                      <p>Supply: {nft.supply}</p>
+                    <div className="h-[90px] w-full pl-5 text-white flex gap-1 flex-col my-0 pr-2">
+                      <p className="font-bold text-[18px] my-0">{nft.name}</p>
+                      <span className="font-medium text-[16px] my-0">Type: {nft.tokenType}</span>
+                      <p className="flex w-full justify-end">Supply: {nft.balance}</p>
                     </div>
                   </div>
                 );
