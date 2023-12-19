@@ -123,7 +123,7 @@ const AuctionDetail = () => {
   
       const contract = await sdk.getContract("0x5237bcc6f1848CDdF2785a12e1114Cd639895e36");
 
-      await contract.englishAuctions.makeBid(id, 0.1);
+      await contract.englishAuctions.makeBid(id, 0.15);
     } catch (err) {
       console.error("contract call failure", err);
     }
@@ -288,7 +288,7 @@ const AuctionDetail = () => {
                               </button>
                             ) : (
                               <button
-                                onClick={bidAuction}
+                                onClick={() => bidAuction()}
                                 className={`w-[90%] bg-[#0D6EFD] text-white rounded-lg h-[45px] font-bold cursor-wait  ${
                                   listing != null && listing.quantity == 0
                                     ? "cursor-move"

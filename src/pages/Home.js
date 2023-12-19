@@ -6,6 +6,7 @@ import { Bars } from "react-loading-icons";
 
 import Slide from "../components/Slide";
 import Auction from "../components/Auction";
+import NewCard from "../components/NewCard";
 
 const Home = () => {
   const [listings, setListings] = useState([]);
