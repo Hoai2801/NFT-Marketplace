@@ -2,11 +2,11 @@ import React, { useEffect, useState, useRef } from "react";
 import { Row, Col } from "react-bootstrap";
 import "../CSS/Account.css";
 import { BsCopy } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { LuPlus } from "react-icons/lu";
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 import {
   useContract,
   useOwnedNFTs,
@@ -15,12 +15,16 @@ import {
   useSigner,
 } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import Card from "../components/Card";
+import Auction from "../components/Auction";
 // import  useLocation from 'react-router-dom';
 function Account() {
-  const inputString = useAddress();
-  const truncatedString = inputString ? `${inputString.substring(0, 4)}...${inputString.slice(
-    -4
-  )}` : "";
+  // const inputString = useAddress();
+  const inputString = useParams().id;
+
+  const truncatedString = inputString
+    ? `${inputString.substring(0, 4)}...${inputString.slice(-4)}`
+    : "";
   const [option, setOption] = useState("nft");
   const textareaRef = useRef(null);
   const [copyNotification, setCopyNotification] = useState("");
@@ -38,11 +42,8 @@ function Account() {
     setTimeout(() => setCopyNotification(""), 2000);
   };
 
-  // show nft
-  const address = useAddress();
-
-  const [contractMarket, setContractMarket] = useState();
   const [listings, setListing] = useState();
+  const [auction, setAuction] = useState();
   const { contract } = useContract(
     "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
   );
@@ -50,22 +51,26 @@ function Account() {
     data: nfts,
     isLoading,
     error,
-  } = useOwnedNFTs(contract, address, { start: 0, count: 100 });
+  } = useOwnedNFTs(contract, inputString, { start: 0, count: 100 });
 
   const signer = useSigner();
   useEffect(() => {
     const effectData = async () => {
+      // sdk and contract address of marketplace v3
       const sdk = new ThirdwebSDK("mumbai", {
-        clientId: "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36",
+        clientId: "598b4f1195f15842446b09538ba00622",
       });
       const contractMarket = await sdk.getContract(
         "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
       );
       const listings = await contractMarket.directListings.getAll();
       setListing(listings);
+      const auctions = await contractMarket.englishAuctions.getAll();
+      setAuction(auctions)
     };
     effectData();
   }, []);
+  console.log(listings);
 
   const listNFT = async (id) => {
     const sdk = new ThirdwebSDK(signer, "mumbai", {
@@ -95,6 +100,7 @@ function Account() {
     };
     await contractMarket.directListings.createListing(listing);
   };
+
   const bidNFT = async (id) => {
     const sdk = new ThirdwebSDK(signer, "mumbai", {
       clientId: "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36",
@@ -115,11 +121,13 @@ function Account() {
       startTimestamp: new Date(Date.now()),
       endTimestamp: new Date(Date.now() + 60 * 60 * 24 * 7),
     };
-    const tx = await contractMarket.englishAuctions.createAuction(auction);
+    await contractMarket.englishAuctions.createAuction(auction);
   };
 
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
+
+  console.log(nfts);
 
   const handleClose = () => setShow(false);
   const handleClose2 = () => setShow2(false);
@@ -325,15 +333,28 @@ function Account() {
             >
               Auction
             </Link>
-
           </div>
         </div>
         <div className="d-flex flex-row-reverse mt-3 gap-3">
-          <Button variant="primary" onClick={handleShow} className="btn-primary btn d-flex items-center p-2">
-            <span><LuPlus /> </span><span>Create Direct Listing</span>
+          <Button
+            variant="primary"
+            onClick={handleShow}
+            className="btn-primary btn d-flex items-center p-2"
+          >
+            <span>
+              <LuPlus />{" "}
+            </span>
+            <span>Create Direct Listing</span>
           </Button>
-          <Button variant="primary" onClick={handleShow2} className="btn-primary btn d-flex items-center p-2">
-            <span><LuPlus /> </span><span>Create Auction</span>
+          <Button
+            variant="primary"
+            onClick={handleShow2}
+            className="btn-primary btn d-flex items-center p-2"
+          >
+            <span>
+              <LuPlus />{" "}
+            </span>
+            <span>Create Auction</span>
           </Button>
         </div>
         {/* ========================Create Direct Listing============================ */}
@@ -394,7 +415,7 @@ function Account() {
           </Modal.Footer>
         </Modal>
         {/*========================Create Auction===============================*/}
-        <Modal show={show2} onHide={handleClose2} className="mt-[90px] overflow-scroll" style={{ maxHeight: '100vh' }}>
+        <Modal show={show2} onHide={handleClose2} className="mt-[80px] overflow-scroll" style={{ maxHeight: '100vh' }}>
           <Modal.Header closeButton>
             <Modal.Title>Create Auction New</Modal.Title>
           </Modal.Header>
@@ -483,122 +504,77 @@ function Account() {
         </Modal>
       </div>
       <div className="px-20 mt-5">
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name</th>
-              <th scope="col">Image</th>
-              <th scope="col">Supply</th>
-            </tr>
-          </thead>
-          {option === "nft" && nfts
-            ? nfts.map((nfts) => {
-              return (
-                <tbody>
-                  <tr className="align-middle">
-                    <th scope="row">{nfts.metadata.id}</th>
-                    <td>{nfts.metadata.name}</td>
-                    <td>
-                      <div className="w-[150px] h-[150px] overflow-hidden rounded-lg">
-                        <img
-                          src={nfts.metadata.image}
-                          alt=""
-                          className=" object-cover"
-                        />
-                      </div>
-                    </td>
-                    <td>{nfts.supply}</td>
-                    <td className="w-[350px]">
-                      <button
-                        onClick={() => listNFT(nfts.metadata.id)}
-                        className="border rounded-lg p-2 bg-blue-400 px-5"
-                      >
-                        List
-                      </button>
-                      <button
-                        onClick={() => bidNFT(nfts.metadata.id)}
-                        className="border rounded-lg p-2 bg-red-400 ml-5 px-5"
-                      >
-                        Aution
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              );
-            })
-            : "Loading"}
-        </table>
-        {/* List */}
-        {option === "list" && (
-          <>
 
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">First</th>
-                  <th scope="col">Last</th>
-                  <th scope="col">Handle</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>list</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-              </tbody>
-            </table>
-          </>
-        )}
+        {/* show nft of account */}
+        <div className={`${option === "nft" ? "" : "hidden"} w-full flex gap-3`}>
+          {option === "nft" && nfts
+            ? nfts.map((nft) => {
+                return (
+                  <div className="rounded-lg w-[250px] bg-[#7f7777] overflow-hidden">
+                    <div className="h-[250px] w-full overflow-hidden">
+                      <img
+                        src={nft.metadata.image}
+                        alt=""
+                        className="w-full p-0"
+                      />
+                    </div>
+                    <div className="h-[80px] w-full pl-5 text-white ">
+                      <p>{nft.metadata.name}</p>
+                      <p>Supply: {nft.supply}</p>
+                    </div>
+                  </div>
+                );
+              })
+            : "loading nft"}{" "}
+        </div>
+
+        {/* show listings */}
+        <div
+          className={`${option === "list" ? "" : "hidden"} w-full flex gap-3`}
+        >
+          {listings
+            ? listings.map((listing, index) => (
+                <>
+                  <div
+                    key={index}
+                    className={`${listing.status == 3 ? "hidden" : ""} ${listing.creatorAddress == inputString ? "" : "hidden"}`}
+                  >
+                    <Link to={`/nft/${index}`}>
+                      <Card
+                        img={listing.asset.image}
+                        name={listing.asset.name}
+                        creatorAddress={listing.creatorAddress}
+                        price={listing.pricePerToken}
+                        status={listing.status}
+                      />
+                    </Link>
+                  </div>
+                </>
+              ))
+            : "Loading listing"}
+        </div>
         {/* Auction */}
-        {option === "auc" && (
-          <>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">First</th>
-                  <th scope="col">Last</th>
-                  <th scope="col">Handle</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>1</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-              </tbody>
-            </table>
-          </>
-        )}
-        <div>
-          {/* {nfts
-        ? nfts.map((nft) => {
-            return (
-              <div>
-                <div className="border">
-                  <div className="w-[150px] h-[150px] overflow-hidden rounded-lg">
-                    <img
-                      src={nft.metadata.image}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  </div> 
-                  <button onClick={() => listNFT(nft.metadata.id)}>
-                    Create Direct Listing!
-                  </button>
-                </div>
+        <div className={`${option === "auc" ? "" : "hidden"} w-full flex gap-3`}>
+        {auction ? auction.map((listing, index) => (
+            <>
+              <div key={index} className={`${listing.status == 3 ? "hidden" : ""} ${listing.creatorAddress == inputString ? "" : "hidden"}`}>
+                <Link to={`/auction/${listing.id}`}>
+                  <Auction
+                    id={listing.id}
+                    img={listing.asset.image}
+                    name={listing.asset.name}
+                    creatorAddress={listing.creatorAddress}
+                    price={listing.pricePerToken}
+                    status={listing.status}
+                    startTime={listing.startTimeInSeconds}
+                  />
+                </Link>
               </div>
-            );
-          })
-        : "loading"} */}
+            </>
+          )) : "Loading"}
         </div>
       </div>
+      {/* </div> */}
     </section>
   );
 }

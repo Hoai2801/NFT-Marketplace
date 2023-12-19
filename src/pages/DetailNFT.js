@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   metamaskWallet,
   useAddress,
@@ -96,38 +96,9 @@ const DetailNFT = () => {
       });
     }
   };
+  
   // function to connect the metamask
   const connect = useConnect();
-  const signer = useSigner();
-  const mintNFT = async () => {
-    try {
-      const sdk = new ThirdwebSDK(signer, "mumbai", {
-        clientId: "598b4f1195f15842446b09538ba00622",
-      });
-
-      const contract = await sdk.getContract(
-        "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
-      );
-      const metadata = {
-        name: "name",
-        description: "description",
-        image: "https://images.unsplash.com/photo-1702611120121-e03dafc14150?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1fHx8ZW58MHx8fHx8", // This can be an image url or file
-      };
-      const toAddress = "0xBDBA9d8889C6acFC3cEE850DC6DE393B01989D07";
-
-      const metadataWithSupply = {
-        metadata,
-        supply: 1000, // The number of this NFT you want to mint
-      };
-
-      const tx = await contract.erc1155.mintTo(toAddress, metadataWithSupply);
-      const receipt = tx.receipt; // the transaction receipt
-      const tokenId = tx.id; // the id of the NFT minted
-      const nft = await tx.data(); // (optional) fetch details of minted NFT
-    } catch (err) {
-      console.error("contract call failure", err);
-    }
-  };
 
   const connectWallet = async () => {
     await connect(metamaskWallet());
@@ -167,9 +138,11 @@ const DetailNFT = () => {
             </h1>
             <span className="fw-semibold">
               Owned by{" "}
-              <span style={{ color: "#007aff" }}>
-                {listing ? listing.creatorAddress : ""}
-              </span>
+              <Link to={`/account/${listing ? listing.creatorAddress : ""}`} >
+                <span style={{ color: "#007aff" }}>
+                  {listing ? listing.creatorAddress : ""}
+                </span>
+              </Link>
             </span>
             <div className="d-flex">
               <div className="d-flex m-3">
