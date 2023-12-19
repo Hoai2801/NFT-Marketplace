@@ -83,13 +83,14 @@ const DetailNFT = () => {
     fetchData();
   }, [id]);
 
+
   // buy the nft
   const BuyNFT = async () => {
     if (address == null) {
       await connectWallet();
     } else {
       buyDirectListing({
-        listingId: listing.asset.id, // ID of the listing to buy
+        listingId: listing.id, // ID of the listing to buy
         quantity: "1",
         buyer: address, // Wallet to buy for
       });

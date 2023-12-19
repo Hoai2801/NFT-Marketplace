@@ -19,7 +19,6 @@ import { MdOutlineIosShare } from "react-icons/md";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { TbTriangleSquareCircle } from "react-icons/tb";
-import { IoMdCart } from "react-icons/io";
 import axios from "axios";
 import {  Bars } from "react-loading-icons";
 const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
@@ -31,11 +30,15 @@ const AutionDetail = () => {
   const address = useAddress();
   const [priceMATIC, setPrice] = useState();
 
+  const [hoursRemaining, setHours] = useState();
+  const [minutesRemaining, setMinutes] = useState();
+  const [secondsRemaining, setSeconds] = useState();
+
   // listing
   const [listing, setListing] = useState();
 
   // conver wei to ether
-  const price = listing ? ethers.utils.formatEther(listing.pricePerToken) : "";
+  const price = listing ? ethers.utils.formatEther(listing.buyoutBidAmount) : "";
   const {
     mutateAsync: buyDirectListing,
     isLoading,
@@ -55,6 +58,7 @@ const AutionDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        countdown(1702975992);
         const sdk = new ThirdwebSDK("mumbai", {
           clientId: "598b4f1195f15842446b09538ba00622",
         });
@@ -65,10 +69,10 @@ const AutionDetail = () => {
         );
 
         // get listing detail
-        const listing = await contractMarket.directListings.getListing(id);
-        // console.log()
-        console.log(listing);
-        setListing(listing);
+        const auction = await contractMarket.englishAuctions.getAuction(id);
+        console.log(auction)
+
+        setListing(auction);
 
         // api get MATIC price
         const price = await axios.get(
@@ -82,6 +86,10 @@ const AutionDetail = () => {
 
     fetchData();
   }, [id]);
+
+  console.log(secondsRemaining)
+  console.log(minutesRemaining)
+  console.log(hoursRemaining)
 
   // buy the nft
   const BuyNFT = async () => {
@@ -127,6 +135,27 @@ const AutionDetail = () => {
       console.error("contract call failure", err);
     }
   };
+
+  function countdown(endTimeInSeconds) {
+    // Tạo đối tượng Date từ dấu thời gian theo giây
+    const endTime = new Date(endTimeInSeconds * 1000);
+  
+    // Lấy thời gian hiện tại
+    const now = new Date();
+  
+    // Tính toán thời gian còn lại
+    const timeRemaining = endTime.getTime() - now.getTime();
+  
+    // Chuyển đổi thời gian còn lại thành giờ, phút và giây
+    const hoursRemaining = Math.floor(timeRemaining / (60 * 60));
+    const minutesRemaining = Math.floor((timeRemaining % (60 * 60)) / 60);
+    const secondsRemaining = timeRemaining % 60;
+  
+    // Trả về các giá trị thời gian còn lại
+    setHours(hoursRemaining)
+    setMinutes(minutesRemaining)
+    setSeconds(secondsRemaining)
+  }
 
   const connectWallet = async () => {
     await connect(metamaskWallet());

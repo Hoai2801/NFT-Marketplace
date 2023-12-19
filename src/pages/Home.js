@@ -2,27 +2,22 @@ import React, { useEffect, useState } from "react";
 import Card from "../components/Card";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { Link } from "react-router-dom";
-import { useContract, useNFT } from "@thirdweb-dev/react";
 import { Bars } from "react-loading-icons";
 
 import Slide from "../components/Slide";
+import Auction from "../components/Auction";
 
 const Home = () => {
   const [listings, setListings] = useState([]);
-  const [aution, setAution] = useState([]);
+  const [auction, setAuction] = useState([]);
 
-  const { contract, isLoading } = useContract(
-    "0x1fe1da2C775c491c40cBF451735495b0F5932B8E"
-  );
-
-  const { data: nftDrop, isLoaading, error } = useNFT(contract, 0);
-
-  const [nft, setNFT] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+
+        // sdk and contract address of marketplace v3
         const sdk = new ThirdwebSDK("mumbai", {
           clientId: "598b4f1195f15842446b09538ba00622",
         });
@@ -31,22 +26,22 @@ const Home = () => {
           "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
         );
         setLoading(false);
+
+        // remove in the future 
+        // const winningBid = await contract.englishAuctions.getWinningBid(1);
+        // console.log(winningBid);
+
+
+        // fetch listing data
         const fetchedListings = await contract.directListings.getAll();
 
         // Update the state with the fetched listings
         setListings(fetchedListings);
         setLoading(true);
-        // NFT
 
-        const contractNFT = await sdk.getContract(
-          "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
-        );
-        const nfts = await contractNFT.erc1155.getAll();
-        setNFT(nfts);
-
-        // Aution
+        // Auction
         const auctions = await contract.englishAuctions.getAllValid();
-        setAution(auctions);
+        setAuction(auctions);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -55,9 +50,7 @@ const Home = () => {
     fetchData();
   }, []);
 
-  // console.log(listings)
-  // console.log(aution)
-  console.log(nft);
+  console.log(auction)
 
   return (
     <>
@@ -96,31 +89,30 @@ const Home = () => {
                     creatorAddress={listing.creatorAddress}
                     price={listing.pricePerToken}
                     status={listing.status}
+                    />
+                </Link>
+              </div>
+            </>
+          ))}
+          <h2 className="font-bold text-[28px] w-full pl-5">Aution NFT</h2>
+          {auction.map((listing, index) => (
+            <>
+              <div key={index} className={listing.status == 3 ? "hidden" : ""}>
+                <Link to={`/aution/${index}`}>
+                  <Auction
+                    id={listing.id}
+                    img={listing.asset.image}
+                    name={listing.asset.name}
+                    creatorAddress={listing.creatorAddress}
+                    price={listing.pricePerToken}
+                    status={listing.status}
+                    startTime={listing.startTimeInSeconds}
                   />
                 </Link>
               </div>
             </>
           ))}
-            <h2 className="font-bold text-[28px] w-full pl-5">Aution NFT</h2>
-            {aution.map((listing, index) => (
-              <>
-                <div
-                  key={index}
-                  className={listing.status == 3 ? "hidden" : ""}
-                >
-                  <Link to={`/nft/${index}`}>
-                    <Card
-                      img={listing.asset.image}
-                      name={listing.asset.name}
-                      creatorAddress={listing.creatorAddress}
-                      price={listing.pricePerToken}
-                      status={listing.status}
-                    />
-                  </Link>
-                </div>
-              </>
-            ))}
-          </div>
+        </div>
       </section>
     </>
   );

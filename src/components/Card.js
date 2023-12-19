@@ -44,7 +44,7 @@ const Card = (props) => {
                
             </div>
             <div className=' w-[90%]  h-[60px] rounded-md p-2 text-[14px] bg-opacity-60'>
-                <p className='text-white grid grid-cols-2 gap-5'>
+                <div className='text-white grid grid-cols-2 gap-5'>
                     <div className='flex flex-col text-[gray]' >
                         Status
                         <p style={{fontSize:'14px', color:"#000", fontWeight:'700'}}>{status}</p>
@@ -53,7 +53,7 @@ const Card = (props) => {
                         Price
                         <p style={{fontSize:'14px', color:"#000", fontWeight:'700'}} className='d-flex gap-2'> <span>{ethAmount} </span> <span>  MATIC</span></p>
                     </div>
-                </p>
+                </div>
             </div>
         </div>
     </div>

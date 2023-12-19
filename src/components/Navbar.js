@@ -16,8 +16,8 @@ const Navbar = () => {
             </div>
             {/* nav  */}
             <div className='flex justify-between w-[300px] mt-3 text-gray-500 gap-10 navbar-item'>
+                <Link to="/">Explore</Link>
                 <Link to="/create">Create</Link>
-                <Link to="/explore">Explore</Link>
                 <Link to="/drops">Drops</Link>
                 <Link to="/account">Account</Link>
             </div>
