@@ -6,18 +6,24 @@ import { Bars } from "react-loading-icons";
 
 import Slide from "../components/Slide";
 import Auction from "../components/Auction";
-import NewCard from "../components/NewCard";
+import { Alchemy, Network } from "alchemy-sdk";
 
 const Home = () => {
+  const config = {
+    apiKey: "ZEIgYqZicvI84G_XlfzAu1YU6sdqJGOo",
+    network: Network.ETH_MAINNET,
+  };
+  const alchemy = new Alchemy(config);
+  
+  const [history, setHistory] = useState();
   const [listings, setListings] = useState([]);
   const [auction, setAuction] = useState([]);
-
+  
   const [loading, setLoading] = useState(false);
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-
         // sdk and contract address of marketplace v3
         const sdk = new ThirdwebSDK("mumbai", {
           clientId: "598b4f1195f15842446b09538ba00622",
