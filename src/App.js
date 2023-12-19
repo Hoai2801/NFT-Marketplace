@@ -4,9 +4,8 @@ import Home from './pages/Home';
 import Layout from './pages/Layout';
 import DetailNFT from './pages/DetailNFT';
 import Create from './pages/Create';
-import Sell from './pages/Sell';
 import Account from './pages/Account';
-import AutionDetail from './pages/AutionDetail';
+import AutionDetail from './pages/AuctionDetail';
 
 function App() {
   return (
@@ -15,9 +14,8 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/nft/:id' element={<DetailNFT />} />
         <Route path='/create' element={<Create />} />
-        {/* <Route path='/sell' element={<Sell />} /> */}
-        <Route path='/account' element={<Account />} />
-        <Route path='/aution/:id' element={<AutionDetail />} />
+        <Route path='/account/:id' element={<Account />} />
+        <Route path='/auction/:id' element={<AutionDetail />} />
       </Route>
     </Routes>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   metamaskWallet,
   useAddress,
@@ -120,10 +120,7 @@ const DetailNFT = () => {
         supply: 1000, // The number of this NFT you want to mint
       };
 
-      const tx = await contract.erc1155.mintTo(toAddress, metadataWithSupply);
-      const receipt = tx.receipt; // the transaction receipt
-      const tokenId = tx.id; // the id of the NFT minted
-      const nft = await tx.data(); // (optional) fetch details of minted NFT
+      await contract.erc1155.mintTo(toAddress, metadataWithSupply);
     } catch (err) {
       console.error("contract call failure", err);
     }
@@ -167,9 +164,11 @@ const DetailNFT = () => {
             </h1>
             <span className="fw-semibold">
               Owned by{" "}
-              <span style={{ color: "#007aff" }}>
-                {listing ? listing.creatorAddress : ""}
-              </span>
+              <Link to={`/account/${listing ? listing.creatorAddress : ""}`} >
+                <span style={{ color: "#007aff" }}>
+                  {listing ? listing.creatorAddress : ""}
+                </span>
+              </Link>
             </span>
             <div className="d-flex">
               <div className="d-flex m-3">

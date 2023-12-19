@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Row, Col } from "react-bootstrap";
 import "../CSS/Account.css";
 import { BsCopy } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
   useContract,
@@ -14,8 +14,10 @@ import {
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 // import  useLocation from 'react-router-dom';
 function Account() {
-  const inputString = useAddress();
-  const truncatedString = inputString? `${inputString.substring(0, 4)}...${inputString.slice(
+  // const inputString = useAddress();
+  const inputString = useParams().id;
+  console.log(inputString)
+  const truncatedString = inputString ? `${inputString.substring(0, 4)}...${inputString.slice(
     -4
   )}` : "";
   const [option, setOption] = useState("nft");
@@ -35,10 +37,11 @@ function Account() {
     setTimeout(() => setCopyNotification(""), 2000);
   };
 
+  const id = useAddress();
+
   // show nft
   const address = useAddress();
 
-  const [contractMarket, setContractMarket] = useState();
   const [listings, setListing] = useState();
   const { contract } = useContract(
     "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
@@ -47,13 +50,14 @@ function Account() {
     data: nfts,
     isLoading,
     error,
-  } = useOwnedNFTs(contract, address, { start: 0, count: 100 });
+  } = useOwnedNFTs(contract, inputString, { start: 0, count: 100 });
 
   const signer = useSigner();
   useEffect(() => {
     const effectData = async () => {
+      // sdk and contract address of marketplace v3
       const sdk = new ThirdwebSDK("mumbai", {
-        clientId: "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36",
+        clientId: "598b4f1195f15842446b09538ba00622",
       });
       const contractMarket = await sdk.getContract(
         "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
@@ -63,6 +67,7 @@ function Account() {
     };
     effectData();
   }, []);
+  console.log(listings)
 
   const listNFT = async (id) => {
     const sdk = new ThirdwebSDK(signer, "mumbai", {
@@ -92,6 +97,7 @@ function Account() {
     };
     await contractMarket.directListings.createListing(listing);
   };
+
   const bidNFT = async (id) => {
     const sdk = new ThirdwebSDK(signer, "mumbai", {
       clientId: "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36",
@@ -112,8 +118,9 @@ function Account() {
       startTimestamp: new Date(Date.now()),
       endTimestamp: new Date(Date.now() + 60 * 60 * 24 * 7),
     };
-    const tx = await contractMarket.englishAuctions.createAuction(auction);
+    await contractMarket.englishAuctions.createAuction(auction);
   };
+  console.log(listings && listings[0].creatorAddress == inputString)
 
   return (
     <section className="container-master-1">
@@ -179,20 +186,20 @@ function Account() {
         </div>
       </div>
       <div className="px-20 mt-5">
-        <table className="table">
+        <table className={`table ${option === "nft" ? "" : "hidden"}`}>
           <thead>
             <tr>
               <th scope="col">#</th>
               <th scope="col">Name</th>
               <th scope="col">Image</th>
               <th scope="col">Supply</th>
-              <th scope="col">Action</th>
+              <th scope="col" className={`col ${id == inputString ? "" : "hidden"}`}>Action</th>
             </tr>
           </thead>
           {option === "nft" && nfts
-            ? nfts.map((nfts) => {
+            ? nfts.map((nfts, index) => {
                 return (
-                  <tbody>
+                  <tbody key={index}>
                     <tr className="align-middle">
                       <th scope="row">{nfts.metadata.id}</th>
                       <td>{nfts.metadata.name}</td>
@@ -206,7 +213,7 @@ function Account() {
                         </div>
                       </td>
                       <td>{nfts.supply}</td>
-                      <td className="w-[350px]">
+                      <td className={`col ${id == inputString ? "" : "hidden"} w-[350px]`}>
                         <button
                           onClick={() => listNFT(nfts.metadata.id)}
                           className="border rounded-lg p-2 bg-blue-400 px-5"
@@ -226,8 +233,7 @@ function Account() {
               })
             : "Loading"}
         </table>
-        {option === "list" && (
-          <table className="table">
+          <table className={`table ${option === "list" ? "" : "hidden"}`}>
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -236,16 +242,19 @@ function Account() {
                 <th scope="col">Handle</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>list</td>
-                <td>Otto</td>
+        {option === "list" &&  listings ? listings.map((listing, index) => {
+          
+          return (
+            <tbody key={index}>
+              <tr className={`${listing.creatorAddress == inputString ? "" : "hidden"}`}>
+                <th scope="row">{listing.id}</th>
+                <td>{listing.pricePerToken}</td>
+                <td><img src={listing.asset.image} alt="" /></td>
                 <td>@mdo</td>
               </tr>
             </tbody>
-          </table>
-        )}
+        )}): "loading"}
+        </table>
         {option === "auc" && (
           <table className="table">
             <thead>

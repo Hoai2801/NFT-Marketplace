@@ -1,21 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { Link, useParams } from "react-router-dom";
 import {
-  Web3Button,
   metamaskWallet,
   useAddress,
   useConnect,
-  useContractWrite,
-  useMakeBid,
   useSigner,
 } from "@thirdweb-dev/react";
-import {
-  useBuyDirectListing,
-  useContract,
-  useCancelDirectListing,
-} from "@thirdweb-dev/react";
-import { BigNumber, ethers } from "ethers";
 import { LiaHandshake } from "react-icons/lia";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { MdOutlineIosShare } from "react-icons/md";
@@ -24,9 +15,8 @@ import { FaRegHeart } from "react-icons/fa";
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import axios from "axios";
 import { Bars } from "react-loading-icons";
-const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 
-const AutionDetail = () => {
+const AuctionDetail = () => {
   // get id from the url
   const { id } = useParams();
   const address = useAddress();
@@ -116,20 +106,10 @@ const AutionDetail = () => {
     const contract = await sdk.getContract("0x5237bcc6f1848CDdF2785a12e1114Cd639895e36");
 
     await contract.englishAuctions.cancelAuction(id);
+    await contract.call("collectAuctionPayout", id);
+    await contract.call("collectAuctionTokens", id);
   }
 
-  // buy the nft
-  // const BuyNFT = async () => {
-  //   if (address == null) {
-  //     await connectWallet();
-  //   } else {
-  //     buyDirectListing({
-  //       listingId: listing.asset.id, // ID of the listing to buy
-  //       quantity: "1",
-  //       buyer: address, // Wallet to buy for
-  //     });
-  //   }
-  // };
   // function to connect the metamask
   const connect = useConnect();
 
@@ -226,9 +206,11 @@ const AutionDetail = () => {
             </h1>
             <span className="fw-semibold">
               Owned by{" "}
-              <span style={{ color: "#007aff" }}>
-                {listing ? listing.creatorAddress : ""}
-              </span>
+              <Link to={`/account/${listing ? listing.creatorAddress : ""}`} >
+                <span style={{ color: "#007aff" }}>
+                  {listing ? listing.creatorAddress : ""}
+                </span>
+              </Link>
             </span>
             <div className="d-flex">
               <div className="d-flex m-3">
@@ -277,9 +259,11 @@ const AutionDetail = () => {
                         style={{ fontSize: "18px" }}
                       >
                         Hightest bid belong to{" "}
-                        <span className="text-orange-400">
-                          {winningBid ? winningBid.bidderAddress : "nobody"}{" "}
-                        </span>
+                        <Link to={`/account/${winningBid ? winningBid.bidderAddress : ""}`} >
+                          <span className="text-orange-400">
+                            {winningBid ? winningBid.bidderAddress : "nobody"}
+                          </span>
+                        </Link>
                       </span>
                       <div className="d-flex align-items-center gap-4">
                         <h1 className="fs-3">
@@ -300,7 +284,7 @@ const AutionDetail = () => {
                                 onClick={() => cancelAuction()}
                                 className="w-[90%] bg-[#0D6EFD] text-white rounded-lg h-[45px] font-bold"
                               >
-                                Cancel Auction
+                                Cancel Auction and get the bid now
                               </button>
                             ) : (
                               <button
@@ -329,4 +313,4 @@ const AutionDetail = () => {
   );
 };
 
-export default AutionDetail;
+export default AuctionDetail;

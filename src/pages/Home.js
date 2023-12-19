@@ -94,11 +94,11 @@ const Home = () => {
               </div>
             </>
           ))}
-          <h2 className="font-bold text-[28px] w-full pl-5">Aution NFT</h2>
+          <h2 className="font-bold text-[28px] w-full pl-5">Auction NFT</h2>
           {auction.map((listing, index) => (
             <>
               <div key={index} className={listing.status == 3 ? "hidden" : ""}>
-                <Link to={`/aution/${listing.id}`}>
+                <Link to={`/auction/${listing.id}`}>
                   <Auction
                     id={listing.id}
                     img={listing.asset.image}
