@@ -15,6 +15,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import axios from "axios";
 import { Bars } from "react-loading-icons";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 
 const AuctionDetail = () => {
   // get id from the url
@@ -90,7 +91,7 @@ const AuctionDetail = () => {
 
     // Lấy năm, tháng và ngày
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; 
+    const month = date.getMonth() + 1;
     const day = date.getDate();
 
     setDays(day);
@@ -98,30 +99,33 @@ const AuctionDetail = () => {
     setYears(year);
   }
 
-  const cancelAuction = async() => {
+  const cancelAuction = async () => {
     const sdk = new ThirdwebSDK(signer, "mumbai", {
       clientId: "598b4f1195f15842446b09538ba00622",
     });
 
-    const contract = await sdk.getContract("0x5237bcc6f1848CDdF2785a12e1114Cd639895e36");
+    const contract = await sdk.getContract(
+      "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
+    );
 
     await contract.englishAuctions.cancelAuction(id);
     await contract.call("collectAuctionPayout", id);
     await contract.call("collectAuctionTokens", id);
-  }
+  };
 
   // function to connect the metamask
   const connect = useConnect();
 
-
-  // make a bid 
+  // make a bid
   const bidAuction = async () => {
     try {
       const sdk = new ThirdwebSDK(signer, "mumbai", {
         clientId: "598b4f1195f15842446b09538ba00622",
       });
-  
-      const contract = await sdk.getContract("0x5237bcc6f1848CDdF2785a12e1114Cd639895e36");
+
+      const contract = await sdk.getContract(
+        "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
+      );
 
       await contract.englishAuctions.makeBid(id, 0.15);
     } catch (err) {
@@ -141,7 +145,9 @@ const AuctionDetail = () => {
 
     // Convert remaining time to hours, minutes, and seconds
     const hours = Math.floor(timeRemaining / (60 * 60 * 1000));
-    const minutes = Math.floor((timeRemaining % (60 * 60 * 1000)) / (60 * 1000));
+    const minutes = Math.floor(
+      (timeRemaining % (60 * 60 * 1000)) / (60 * 1000)
+    );
     const seconds = Math.floor((timeRemaining % (60 * 1000)) / 1000);
 
     // Update state with calculated values
@@ -152,7 +158,29 @@ const AuctionDetail = () => {
     // Update countdown every second
     setTimeout(() => countdown(endTimeInSeconds), 1000);
   }
+  const [isPopup, setIsPopup] = useState(false);
+  const [priceBid, setPriceBid] = useState(0);
+  const priceNow = 3;
 
+  const hanldeClosePopup = () => {
+    setIsPopup(false);
+  };
+  const hanldeInputBid = (e) => {
+    setPriceBid(e.target.value);
+  };
+  const hanldeBid = () => {
+    setTimeout(() => {
+      setIsPopup(true);
+    }, 2000);
+  };
+  const hanldeSubmit = (e) => {
+    if (priceBid <= priceNow) {
+      alert(`Gia cua ban phai lon hon ${priceNow}`);
+      e.preventDefault();
+    }
+    e.preventDefault();
+    console.log(priceBid);
+  };
   const connectWallet = async () => {
     await connect(metamaskWallet());
   };
@@ -206,7 +234,7 @@ const AuctionDetail = () => {
             </h1>
             <span className="fw-semibold">
               Owned by{" "}
-              <Link to={`/account/${listing ? listing.creatorAddress : ""}`} >
+              <Link to={`/account/${listing ? listing.creatorAddress : ""}`}>
                 <span style={{ color: "#007aff" }}>
                   {listing ? listing.creatorAddress : ""}
                 </span>
@@ -259,7 +287,11 @@ const AuctionDetail = () => {
                         style={{ fontSize: "18px" }}
                       >
                         Hightest bid belong to{" "}
-                        <Link to={`/account/${winningBid ? winningBid.bidderAddress : ""}`} >
+                        <Link
+                          to={`/account/${
+                            winningBid ? winningBid.bidderAddress : ""
+                          }`}
+                        >
                           <span className="text-orange-400">
                             {winningBid ? winningBid.bidderAddress : "nobody"}
                           </span>
@@ -288,16 +320,48 @@ const AuctionDetail = () => {
                               </button>
                             ) : (
                               <button
-                                onClick={() => bidAuction()}
+                                onClick={hanldeBid}
                                 className={`w-[90%] bg-[#0D6EFD] text-white rounded-lg h-[45px] font-bold cursor-wait  ${
                                   listing != null && listing.quantity == 0
                                     ? "cursor-move"
                                     : ""
                                 }`}
                               >
-                                Make a bid with {listing ? (winningBid.bidAmount / 1e18 + listing.minimumBidAmount / 1e18) : 0}
+                                Make a bid with{" "}
+                                {/* {listing
+                                  ? winningBid.bidAmount / 1e18 +
+                                    listing.minimumBidAmount / 1e18
+                                  : 0} */}
                               </button>
-                              )}
+                            )}
+                            {/* Popup */}
+                            {isPopup && (
+                              <div className="popup">
+                                <div className="popup-content">
+                                  <IoIosCloseCircleOutline
+                                    className="w-6 h-6 hover:cursor-pointer   "
+                                    onClick={hanldeClosePopup}
+                                  />
+                                  <div className="w-full h-full flex flex-col justify-center items-center">
+                                    <input
+                                      onChange={hanldeInputBid}
+                                      type="number"
+                                      min="0"
+                                      className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full  p-2.5 "
+                                      placeholder="Please input bid"
+                                      required
+                                    />
+                                    <button
+                                      className="mt-4 rounded-lg w-32 h-12 bg-blue-500 text-white text-center font-semibold"
+                                      onClick={hanldeSubmit}
+                                      type="submit"
+                                    >
+                                      Submit
+                                    </button>
+                                  </div>
+                                </div>{" "}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

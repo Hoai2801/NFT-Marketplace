@@ -20,8 +20,11 @@ import { FaRegEye } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import { IoMdCart } from "react-icons/io";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 import axios from "axios";
-import {  Bars } from "react-loading-icons";
+import { Bars } from "react-loading-icons";
+import "../CSS/DetailNFT.css";
+
 const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 
 const DetailNFT = () => {
@@ -82,21 +85,20 @@ const DetailNFT = () => {
 
     fetchData();
   }, [id]);
-
-
+  const [isPopup, setIsPopup] = useState(false);
   // buy the nft
   const BuyNFT = async () => {
     if (address == null) {
       await connectWallet();
     } else {
-      buyDirectListing({
-        listingId: listing.id, // ID of the listing to buy
-        quantity: "1",
-        buyer: address, // Wallet to buy for
-      });
+      setTimeout(() => {
+        setIsPopup(true);
+      }, 2000);
     }
   };
-  
+  const hanldeClosePopup = () => {
+    setIsPopup(false);
+  };
   // function to connect the metamask
   const connect = useConnect();
 
@@ -106,8 +108,23 @@ const DetailNFT = () => {
 
   return (
     <div className="mt-5">
-      <div className={`${listing ? "hidden" : "d-flex justify-content-center align-items-center"}`} style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(1, 1, 1, 0.6)", zIndex: 9999 }}>
-        <Bars/>
+      <div
+        className={`${
+          listing
+            ? "hidden"
+            : "d-flex justify-content-center align-items-center"
+        }`}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(1, 1, 1, 0.6)",
+          zIndex: 9999,
+        }}
+      >
+        <Bars />
       </div>
       <div className={`container-master-img-infor ${listing ? "" : "hidden"}`}>
         <div className="flex w-full px-20 gap-5 justify-between">
@@ -138,7 +155,7 @@ const DetailNFT = () => {
             </h1>
             <span className="fw-semibold">
               Owned by{" "}
-              <Link to={`/account/${listing ? listing.creatorAddress : ""}`} >
+              <Link to={`/account/${listing ? listing.creatorAddress : ""}`}>
                 <span style={{ color: "#007aff" }}>
                   {listing ? listing.creatorAddress : ""}
                 </span>
@@ -182,7 +199,12 @@ const DetailNFT = () => {
                   </div> */}
                   <div className="card-footer">
                     <div>
-                      <span className="text-secondary d-block mb-4 " style={{fontSize:'18px'}}>Current price</span>
+                      <span
+                        className="text-secondary d-block mb-4 "
+                        style={{ fontSize: "18px" }}
+                      >
+                        Current price
+                      </span>
                       <div className="d-flex align-items-center gap-4">
                         <h1 className="fs-3">{price ? price : ""} MATIC</h1>
                         <span className="text-secondary">
@@ -190,7 +212,7 @@ const DetailNFT = () => {
                         </span>
                       </div>
 
-                      <div className="row">
+                      <div className="row relative">
                         <div className="col-12">
                           <div className="input-group mb-3 w-full mt-4 flex justify-center">
                             {listing && listing.creatorAddress === address ? (
@@ -203,15 +225,35 @@ const DetailNFT = () => {
                             ) : (
                               <button
                                 onClick={BuyNFT}
-                                className={`w-[90%] bg-[#0D6EFD] text-white rounded-l-lg cursor-wait  ${listing != null && listing.quantity == 0
-                                  ? " cursor-move"
-                                  : ""
-                                  }`}
+                                className={`w-[90%] bg-[#0D6EFD] text-white rounded-l-lg cursor-wait  ${
+                                  listing != null && listing.quantity == 0
+                                    ? " cursor-move"
+                                    : ""
+                                }`}
                               >
                                 {listing != null && listing.quantity == 0
                                   ? "Sout out"
                                   : "Buy"}
                               </button>
+                            )}
+                            {/* Popup */}
+                            {isPopup && (
+                              <div className="popup">
+                                <div className="popup-content">
+                                  <IoIosCloseCircleOutline
+                                    className="w-6 h-6 hover:cursor-pointer"
+                                    onClick={hanldeClosePopup}
+                                  />
+                                  <div className="w-full h-full flex justify-center items-center">
+                                    <input
+                                      type="text"
+                                      className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 "
+                                      placeholder="Please input data"
+                                      required
+                                    />
+                                  </div>
+                                </div>{" "}
+                              </div>
                             )}
 
                             <span
@@ -221,7 +263,6 @@ const DetailNFT = () => {
                             >
                               <IoMdCart />
                             </span>
-                
                           </div>
                         </div>
                       </div>
