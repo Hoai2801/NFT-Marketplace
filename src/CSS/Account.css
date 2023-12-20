@@ -135,3 +135,10 @@
     background-color: #F6F6F6;
     font-weight: 600;
 }
+.hiddenBtnCreate button{
+    display: none !important;
+}
+
+.cardNFT{
+  cursor: pointer;
+}
