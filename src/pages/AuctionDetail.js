@@ -331,11 +331,7 @@ const AuctionDetail = () => {
                                     : ""
                                 }`}
                               >
-                                Make a bid with{" "}
-                                {/* {listing
-                                  ? winningBid.bidAmount / 1e18 +
-                                    listing.minimumBidAmount / 1e18
-                                  : 0} */}
+                                Make a bid 
                               </button>
                             )}
                             {/* Popup */}

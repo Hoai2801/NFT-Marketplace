@@ -6,7 +6,6 @@ import { Bars } from "react-loading-icons";
 
 import Slide from "../components/Slide";
 import Auction from "../components/Auction";
-import { Alchemy, Network } from "alchemy-sdk";
 
 const Home = () => {
   const [listings, setListings] = useState([]);

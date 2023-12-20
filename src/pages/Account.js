@@ -128,15 +128,13 @@ function Account() {
       timeBufferInSeconds: 60 * 60 * 24,
       bidBufferBps: "500",
       startTimestamp: new Date(Date.now()),
-      endTimestamp: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+      endTimestamp: new Date(Date.now() + +auctionDuration),
     };
     await contractMarket.englishAuctions.createAuction(auction);
   };
 
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
-
-  // console.log(nfts);
 
   const handleClose = () => setShow(false);
   const handleClose2 = () => setShow2(false);
@@ -288,8 +286,6 @@ function Account() {
     }
   }
   const address = useAddress();
-  // const [isHovered, setIsHovered] = useState(true);
-  console.log(auctionDuration)
 
   return (
     <section className="container-master-1">
@@ -533,7 +529,6 @@ function Account() {
                       onClick={() => handleShow2(nft)}
                       className="btn-primary btn d-flex items-center "
                       style={{fontSize:"12px" , borderRadius:'0px', borderRight:'1px solid gray '}}
-                      
                     >
                       <b>Create Auction</b>
                     </Button>
