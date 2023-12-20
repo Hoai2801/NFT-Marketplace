@@ -88,7 +88,7 @@ const Home = () => {
           <h2 className="font-bold text-[28px] w-full pl-5">Buy NFT</h2>
           {listings.map((listing, index) => (
             <>
-              <div key={index} className={listing.status == 3 ? "hidden" : ""}>
+              <div key={index} className={listing.status === 3 || listing.status === 2 ? "hidden" : ""}>
                 <Link to={`/nft/${index}`}>
                   <Card
                     img={listing.asset.image}

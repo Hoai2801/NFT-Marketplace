@@ -6,6 +6,7 @@ import DetailNFT from './pages/DetailNFT';
 import Create from './pages/Create';
 import Account from './pages/Account';
 import AutionDetail from './pages/AuctionDetail';
+import Search from './pages/Search';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path='/create' element={<Create />} />
         <Route path='/account/:id' element={<Account />} />
         <Route path='/auction/:id' element={<AutionDetail />} />
+        <Route path='/search/:name' element={<Search />} />
       </Route>
     </Routes>
   );
