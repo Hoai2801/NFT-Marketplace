@@ -52,9 +52,6 @@ const DetailNFT = () => {
     cancelError,
   } = useCancelDirectListing(contract);
 
-  const [view, setView] = useState("24");
-  const [fav, setFav] = useState("18");
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,16 +59,17 @@ const DetailNFT = () => {
           clientId: "598b4f1195f15842446b09538ba00622",
         });
 
+        // const history = 1;
+        // setHistory(history)
+        
         // market
         const contractMarket = await sdk.getContract(
           "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
-        );
-
-        // get listing detail
-        const listing = await contractMarket.directListings.getListing(id);
-        // console.log()
-        console.log(listing);
-        setListing(listing);
+          );
+          
+          // get listing detail
+          const listing = await contractMarket.directListings.getListing(id);
+          setListing(listing);
 
         // api get MATIC price
         const price = await axios.get(
@@ -91,9 +89,11 @@ const DetailNFT = () => {
     if (address == null) {
       await connectWallet();
     } else {
-      setTimeout(() => {
-        setIsPopup(true);
-      }, 2000);
+      buyDirectListing({
+        listingId: listing.id, // ID of the listing to buy
+        quantity: "1",
+        buyer: address, // Wallet to buy for
+      });
     }
   };
   const hanldeClosePopup = () => {
@@ -105,6 +105,8 @@ const DetailNFT = () => {
   const connectWallet = async () => {
     await connect(metamaskWallet());
   };
+
+  console.log(listing)
 
   return (
     <div className="mt-5">
@@ -164,11 +166,11 @@ const DetailNFT = () => {
             <div className="d-flex">
               <div className="d-flex m-3">
                 <FaRegEye className="mt-1 me-2 " />
-                <span> {view} views</span>
+                <span> 24 views</span>
               </div>
               <div className="d-flex m-3">
                 <FaRegHeart className="mt-1 me-2" />
-                <span>{fav} favorite</span>
+                <span>18 favorite</span>
               </div>
 
               <div className="d-flex m-3">
@@ -227,7 +229,7 @@ const DetailNFT = () => {
                                 onClick={BuyNFT}
                                 className={`w-[90%] bg-[#0D6EFD] text-white rounded-l-lg cursor-wait  ${
                                   listing != null && listing.quantity == 0
-                                    ? " cursor-move"
+                                    ? "cursor-move"
                                     : ""
                                 }`}
                               >

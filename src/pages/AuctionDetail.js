@@ -64,7 +64,6 @@ const AuctionDetail = () => {
       e.preventDefault();
     }
     e.preventDefault();
-    console.log(priceBid);
   };
   const connectWallet = async () => {
     await connect(metamaskWallet());
@@ -76,8 +75,8 @@ const AuctionDetail = () => {
         const sdk = new ThirdwebSDK("mumbai", {
           clientId: "598b4f1195f15842446b09538ba00622",
         });
-        const balance = await sdk.wallet.balance();
-        setBalance(balance)
+        // const balance = await sdk.wallet.balance();
+        // setBalance(balance)
 
         // market
         const contractMarket = await sdk.getContract(
@@ -111,10 +110,7 @@ const AuctionDetail = () => {
     };
 
     fetchData();
-  }, [id, secondsRemaining, countdown, signer]);
-
-  
-  console.log(balance)
+  }, [id, secondsRemaining, countdown, signer]);  
 
   // convert second to date
   function convertSecondsToDate(seconds) {
@@ -191,6 +187,7 @@ const AuctionDetail = () => {
     // Update countdown every second
     setTimeout(() => countdown(endTimeInSeconds), 1000);
   }
+
 
   return (
     <div className="mt-5">
@@ -350,6 +347,8 @@ const AuctionDetail = () => {
                                     onClick={hanldeClosePopup}
                                   />
                                   <div className="w-full h-full flex flex-col justify-center items-center">
+                                    <p className="my-2 text-[18px]">How many <span className="font-bold text-[18px]">Matic</span> you want to bid for <span className="font-bold text-[18px]">{listing.asset.name}</span></p>
+                                    
                                     <input
                                       onChange={hanldeInputBid}
                                       type="number"
@@ -360,7 +359,7 @@ const AuctionDetail = () => {
                                     />
                                     <button
                                       className="mt-4 rounded-lg w-32 h-12 bg-blue-500 text-white text-center font-semibold"
-                                      onClick={bidAuction}
+                                      onClick={() => bidAuction()}
                                       type="submit"
                                     >
                                       Submit

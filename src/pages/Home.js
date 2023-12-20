@@ -9,13 +9,6 @@ import Auction from "../components/Auction";
 import { Alchemy, Network } from "alchemy-sdk";
 
 const Home = () => {
-  const config = {
-    apiKey: "ZEIgYqZicvI84G_XlfzAu1YU6sdqJGOo",
-    network: Network.ETH_MAINNET,
-  };
-  const alchemy = new Alchemy(config);
-  
-  const [history, setHistory] = useState();
   const [listings, setListings] = useState([]);
   const [auction, setAuction] = useState([]);
   
@@ -34,11 +27,6 @@ const Home = () => {
         );
         setLoading(false);
 
-        // remove in the future 
-        // const winningBid = await contract.englishAuctions.getWinningBid(1);
-        // console.log(winningBid);
-
-
         // fetch listing data
         const fetchedListings = await contract.directListings.getAll();
 
@@ -56,8 +44,6 @@ const Home = () => {
 
     fetchData();
   }, []);
-
-  console.log(auction)
 
   return (
     <>
