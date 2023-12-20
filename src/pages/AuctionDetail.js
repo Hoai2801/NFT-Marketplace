@@ -16,6 +16,7 @@ import { TbTriangleSquareCircle } from "react-icons/tb";
 import axios from "axios";
 import { Bars } from "react-loading-icons";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { BigNumber } from "ethers";
 
 const AuctionDetail = () => {
   // get id from the url
@@ -23,6 +24,7 @@ const AuctionDetail = () => {
   const address = useAddress();
   const [priceMATIC, setPrice] = useState();
 
+  const [balance, setBalance] = useState();
   // time countdown
   const [hoursRemaining, setHours] = useState();
   const [minutesRemaining, setMinutes] = useState();
@@ -43,12 +45,39 @@ const AuctionDetail = () => {
 
   const signer = useSigner();
 
+  const [isPopup, setIsPopup] = useState(false);
+  const [priceBid, setPriceBid] = useState(0);
+  const priceNow = 3;
+
+  const hanldeClosePopup = () => {
+    setIsPopup(false);
+  };
+  const hanldeInputBid = (e) => {
+    setPriceBid(e.target.value);
+  };
+  const hanldeBid = () => {
+    setIsPopup(true);
+  };
+  const hanldeSubmit = (e) => {
+    if (priceBid <= priceNow) {
+      alert(`Gia cua ban phai lon hon ${priceNow}`);
+      e.preventDefault();
+    }
+    e.preventDefault();
+    console.log(priceBid);
+  };
+  const connectWallet = async () => {
+    await connect(metamaskWallet());
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const sdk = new ThirdwebSDK("mumbai", {
           clientId: "598b4f1195f15842446b09538ba00622",
         });
+        const balance = await sdk.wallet.balance();
+        setBalance(balance)
 
         // market
         const contractMarket = await sdk.getContract(
@@ -83,6 +112,9 @@ const AuctionDetail = () => {
 
     fetchData();
   }, [id, secondsRemaining, countdown, signer]);
+
+  
+  console.log(balance)
 
   // convert second to date
   function convertSecondsToDate(seconds) {
@@ -126,8 +158,9 @@ const AuctionDetail = () => {
       const contract = await sdk.getContract(
         "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
       );
+      console.log(priceBid);
 
-      await contract.englishAuctions.makeBid(id, 0.15);
+      await contract.englishAuctions.makeBid(id, priceBid);
     } catch (err) {
       console.error("contract call failure", err);
     }
@@ -158,32 +191,6 @@ const AuctionDetail = () => {
     // Update countdown every second
     setTimeout(() => countdown(endTimeInSeconds), 1000);
   }
-  const [isPopup, setIsPopup] = useState(false);
-  const [priceBid, setPriceBid] = useState(0);
-  const priceNow = 3;
-
-  const hanldeClosePopup = () => {
-    setIsPopup(false);
-  };
-  const hanldeInputBid = (e) => {
-    setPriceBid(e.target.value);
-  };
-  const hanldeBid = () => {
-    setTimeout(() => {
-      setIsPopup(true);
-    }, 2000);
-  };
-  const hanldeSubmit = (e) => {
-    if (priceBid <= priceNow) {
-      alert(`Gia cua ban phai lon hon ${priceNow}`);
-      e.preventDefault();
-    }
-    e.preventDefault();
-    console.log(priceBid);
-  };
-  const connectWallet = async () => {
-    await connect(metamaskWallet());
-  };
 
   return (
     <div className="mt-5">
@@ -353,7 +360,7 @@ const AuctionDetail = () => {
                                     />
                                     <button
                                       className="mt-4 rounded-lg w-32 h-12 bg-blue-500 text-white text-center font-semibold"
-                                      onClick={hanldeSubmit}
+                                      onClick={bidAuction}
                                       type="submit"
                                     >
                                       Submit
