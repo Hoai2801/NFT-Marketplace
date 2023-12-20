@@ -9,18 +9,20 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {
   useContract,
-  useOwnedNFTs,
   useAddress,
   NATIVE_TOKEN_ADDRESS,
   useSigner,
+  metamaskWallet,
+  useConnect,
 } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import Card from "../components/Card";
 import Auction from "../components/Auction";
 // import  useLocation from 'react-router-dom';
 import { Alchemy, Network } from "alchemy-sdk";
-
 function Account() {
+  const [url, setUrl] = useState(window.location.pathname);
+
   const config = {
     apiKey: "ZEIgYqZicvI84G_XlfzAu1YU6sdqJGOo",
     network: Network.MATIC_MUMBAI,
@@ -56,12 +58,27 @@ function Account() {
     "0x1BB3B7B5dD5DE77bB2994BE0c88461331f25B373"
   );
 
+  const address = useAddress();
+  // function to connect the metamask
+  const connect = useConnect();
+
+  const connectWallet = async () => {
+    await connect(metamaskWallet());
+  };
+  if (address == undefined) {
+    connectWallet();
+  }
+  useEffect(() => {
+    if (url === "/account/undefined") {
+      if (address != null) setUrl(`/account/${address}`);
+    }
+  }, [url]);
 
   const signer = useSigner();
   useEffect(() => {
     const effectData = async () => {
       const nfts = await alchemy.nft.getNftsForOwner(inputString);
-      setNewNFT(nfts.ownedNfts)
+      setNewNFT(nfts.ownedNfts);
       // sdk and contract address of marketplace v3
       const sdk = new ThirdwebSDK("mumbai", {
         clientId: "598b4f1195f15842446b09538ba00622",
@@ -72,7 +89,7 @@ function Account() {
       const listings = await contractMarket.directListings.getAll();
       setListing(listings);
       const auctions = await contractMarket.englishAuctions.getAll();
-      setAuction(auctions)
+      setAuction(auctions);
     };
     effectData();
   }, [inputString]);
@@ -140,48 +157,59 @@ function Account() {
   const handleShow = () => setShow(true);
   const handleShow2 = () => setShow2(true);
 
-
-  const [listingCurrency, setListingCurrency] = useState('');
-  const [buyoutPrice, setBuyoutPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [reservePrice, setReservePrice] = useState('');
-  const [auctionDuration, setAuctionDuration] = useState('');
+  const [listingCurrency, setListingCurrency] = useState("");
+  const [buyoutPrice, setBuyoutPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [reservePrice, setReservePrice] = useState("");
+  const [auctionDuration, setAuctionDuration] = useState("");
 
   const [errors, setErrors] = useState({
-    listingCurrency: '',
-    buyoutPrice: '',
-    quantity: '',
-    reservePrice: '',
-    auctionDuration: '',
+    listingCurrency: "",
+    buyoutPrice: "",
+    quantity: "",
+    reservePrice: "",
+    auctionDuration: "",
   });
 
   const handleListingCurrencyChange = (event) => {
     setListingCurrency(event.target.value);
-    setErrors({ ...errors, listingCurrency: '' });
+    setErrors({ ...errors, listingCurrency: "" });
   };
 
   const handleBuyoutPriceChange = (event) => {
     const value = event.target.value;
     setBuyoutPrice(value);
-    setErrors({ ...errors, buyoutPrice: isNaN(value) ? 'Buyout price must be a number' : '' });
+    setErrors({
+      ...errors,
+      buyoutPrice: isNaN(value) ? "Buyout price must be a number" : "",
+    });
   };
 
   const handleQuantityChange = (event) => {
     const value = event.target.value;
     setQuantity(value);
-    setErrors({ ...errors, quantity: isNaN(value) ? 'Quantity must be a number' : '' });
+    setErrors({
+      ...errors,
+      quantity: isNaN(value) ? "Quantity must be a number" : "",
+    });
   };
 
   const handleReservePriceChange = (event) => {
     const value = event.target.value;
     setReservePrice(value);
-    setErrors({ ...errors, reservePrice: isNaN(value) ? 'Reserve price must be a number' : '' });
+    setErrors({
+      ...errors,
+      reservePrice: isNaN(value) ? "Reserve price must be a number" : "",
+    });
   };
 
   const handleAuctionDurationChange = (event) => {
     const value = event.target.value;
     setAuctionDuration(value);
-    setErrors({ ...errors, auctionDuration: isNaN(value) ? 'Auction duration must be a number' : '' });
+    setErrors({
+      ...errors,
+      auctionDuration: isNaN(value) ? "Auction duration must be a number" : "",
+    });
   };
 
   const handleCreateAuction = () => {
@@ -189,96 +217,125 @@ function Account() {
     let isValid = true;
 
     if (!listingCurrency) {
-      setErrors((prevErrors) => ({ ...prevErrors, listingCurrency: 'Listing currency is required' }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        listingCurrency: "Listing currency is required",
+      }));
       isValid = false;
     }
 
     if (!buyoutPrice || isNaN(buyoutPrice)) {
-      setErrors((prevErrors) => ({ ...prevErrors, buyoutPrice: 'Buyout price is required' }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        buyoutPrice: "Buyout price is required",
+      }));
       isValid = false;
     }
 
     if (!quantity || isNaN(quantity)) {
-      setErrors((prevErrors) => ({ ...prevErrors, quantity: 'Quantity is required' }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        quantity: "Quantity is required",
+      }));
       isValid = false;
     }
 
     if (!reservePrice || isNaN(reservePrice)) {
-      setErrors((prevErrors) => ({ ...prevErrors, reservePrice: 'Reserve price is required' }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        reservePrice: "Reserve price is required",
+      }));
       isValid = false;
     }
 
     if (!auctionDuration || isNaN(auctionDuration)) {
-      setErrors((prevErrors) => ({ ...prevErrors, auctionDuration: 'Auction duration is required' }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        auctionDuration: "Auction duration is required",
+      }));
       isValid = false;
     }
 
     if (isValid) {
       // Tiếp tục với logic tạo đấu giá nếu tất cả đều hợp lệ
-      console.log('Listing Currency:', listingCurrency);
-      console.log('Buyout Price:', buyoutPrice);
-      console.log('Quantity:', quantity);
-      console.log('Reserve Price:', reservePrice);
-      console.log('Auction Duration:', auctionDuration);
+      console.log("Listing Currency:", listingCurrency);
+      console.log("Buyout Price:", buyoutPrice);
+      console.log("Quantity:", quantity);
+      console.log("Reserve Price:", reservePrice);
+      console.log("Auction Duration:", auctionDuration);
       handleClose2();
     }
-
   };
-  const [listingCurrency1, setListingCurrency1] = useState('');
-  const [listingPrice, setListingPrice] = useState('');
-  const [quantity1, setQuantity1] = useState('');
+  const [listingCurrency1, setListingCurrency1] = useState("");
+  const [listingPrice, setListingPrice] = useState("");
+  const [quantity1, setQuantity1] = useState("");
 
   const [errors1, setErrors1] = useState({
-    listingCurrency1: '',
-    listingPrice: '',
-    quantity1: '',
+    listingCurrency1: "",
+    listingPrice: "",
+    quantity1: "",
   });
 
   const handleListingCurrencyChange2 = (event) => {
     setListingCurrency1(event.target.value);
-    setErrors1({ ...errors1, listingCurrency1: '' });
+    setErrors1({ ...errors1, listingCurrency1: "" });
   };
 
   const handleListingPriceChange2 = (event) => {
     const value = event.target.value;
     setListingPrice(value);
-    setErrors1({ ...errors1, listingPrice: isNaN(value) ? 'Listing price must be a number' : '' });
+    setErrors1({
+      ...errors1,
+      listingPrice: isNaN(value) ? "Listing price must be a number" : "",
+    });
   };
 
   const handleQuantityChange2 = (event) => {
     const value = event.target.value;
     setQuantity1(value);
-    setErrors1({ ...errors1, quantity1: isNaN(value) ? 'Quantity must be a number' : '' });
+    setErrors1({
+      ...errors1,
+      quantity1: isNaN(value) ? "Quantity must be a number" : "",
+    });
   };
 
   const handleCreateDirectListing2 = () => {
     let isValid = true;
 
     if (!listingCurrency1) {
-      setErrors1((prevErrors) => ({ ...prevErrors, listingCurrency1: 'Listing currency is required' }));
+      setErrors1((prevErrors) => ({
+        ...prevErrors,
+        listingCurrency1: "Listing currency is required",
+      }));
       isValid = false;
     }
 
     if (!listingPrice || isNaN(listingPrice)) {
-      setErrors1((prevErrors) => ({ ...prevErrors, listingPrice: 'Listing price must be a number' }));
+      setErrors1((prevErrors) => ({
+        ...prevErrors,
+        listingPrice: "Listing price must be a number",
+      }));
       isValid = false;
     }
 
     if (!quantity1 || isNaN(quantity1)) {
-      setErrors1((prevErrors) => ({ ...prevErrors, quantity1: 'Quantity must be a number' }));
+      setErrors1((prevErrors) => ({
+        ...prevErrors,
+        quantity1: "Quantity must be a number",
+      }));
       isValid = false;
     }
 
     if (isValid) {
       // Tiếp tục với logic tạo Direct Listing nếu tất cả đều hợp lệ
-      console.log('Listing Currency:', listingCurrency1);
-      console.log('Listing Price:', listingPrice);
-      console.log('Quantity:', quantity1);
-
+      console.log("Listing Currency:", listingCurrency1);
+      console.log("Listing Price:", listingPrice);
+      console.log("Quantity:", quantity1);
 
       handleClose();
-    };
-  }
+    }
+  };
+  console.log(newNFT)
   return (
     <section className="container-master-1">
       <Row className="container-header">
@@ -364,155 +421,14 @@ function Account() {
           </Button>
         </div>
         {/* ========================Create Direct Listing============================ */}
-        <Modal show={show} onHide={handleClose} className="mt-[100px]">
-          <Modal.Header closeButton>
-            <Modal.Title>Create Direct Listing</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Label>Listing Currency <span className="text-[red]">*</span></Form.Label>
-                <Form.Select aria-label="" onChange={handleListingCurrencyChange2} value={listingCurrency1}>
-                  <option value="">Select a currency</option>
-                  <option value="matic">MATIC (MATIC)</option>
-                </Form.Select>
-                {errors1.listingCurrency1 && <div className="text-danger">{errors1.listingCurrency1}</div>}
-                <span className="" style={{ fontSize: '14px ', color: 'gray' }}>
-                  The currency you want to sell your tokens for.
-                </span>
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Label>Listing Price<span className="text-[red]">*</span></Form.Label>
-                <Form.Control
-                  aria-label=""
-                  type="text"
-                  placeholder="0"
-                  onChange={handleListingPriceChange2}
-                  value={listingPrice}
-                ></Form.Control>
-                {errors1.listingPrice && <div className="text-danger">{errors1.listingPrice}</div>}
-                <span className="" style={{ fontSize: '14px ', color: 'gray' }}>
-                  The price per token a buyer can pay to instantly buyout the auction.
-                </span>
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Label>Quantity <span className="text-[red]">*</span></Form.Label>
-                <Form.Control
-                  aria-label=""
-                  type="text"
-                  placeholder="1"
-                  onChange={handleQuantityChange2}
-                  value={quantity1}
-                ></Form.Control>
-                {errors1.quantity1 && <div className="text-danger">{errors1.quantity1}</div>}
-                <span className="" style={{ fontSize: '14px ', color: 'gray' }}>
-                  The number of tokens to list for sale.
-                </span>
-              </Form.Group>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={handleCreateDirectListing2}>
-              Create Direct Listing
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        {/*========================Create Auction===============================*/}
-        <Modal show={show2} onHide={handleClose2} className="mt-[80px] overflow-scroll" style={{ maxHeight: '100vh' }}>
-          <Modal.Header closeButton>
-            <Modal.Title>Create Auction New</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Label>Listing Currency <span className="text-[red]">*</span></Form.Label>
-                <Form.Select aria-label="" onChange={handleListingCurrencyChange} value={listingCurrency}>
-                  <option value="">Select a currency</option>
-                  <option value="matic">MATIC (MATIC)</option>
-                </Form.Select>
-                {errors.listingCurrency && <div className="text-danger">{errors.listingCurrency}</div>}
-                <span className="" style={{ fontSize: '14px ', color: 'gray' }}>
-                  The currency you want to sell your tokens for.
-                </span>
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Label>Buyout Price Per Token <span className="text-[red]">*</span></Form.Label>
-                <Form.Control
-                  aria-label=""
-                  type="text"
-                  placeholder="0"
-                  onChange={handleBuyoutPriceChange}
-                  value={buyoutPrice}
-                ></Form.Control>
-                {errors.buyoutPrice && <div className="text-danger">{errors.buyoutPrice}</div>}
-                <span className="" style={{ fontSize: '14px ', color: 'gray' }}>
-                  The price per token a buyer can pay to instantly buyout the auction.
-                </span>
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Label>Quantity <span className="text-[red]">*</span></Form.Label>
-                <Form.Control
-                  aria-label=""
-                  type="text"
-                  placeholder="1"
-                  onChange={handleQuantityChange}
-                  value={quantity}
-                ></Form.Control>
-                {errors.quantity && <div className="text-danger">{errors.quantity}</div>}
-                <span className="" style={{ fontSize: '14px ', color: 'gray' }}>
-                  The number of tokens to list for sale.
-                </span>
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Label>Reserve Price Per Token<span className="text-[red]">*</span></Form.Label>
-                <Form.Control
-                  aria-label=""
-                  type="text"
-                  placeholder="1"
-                  onChange={handleReservePriceChange}
-                  value={reservePrice}
-                ></Form.Control>
-                {errors.reservePrice && <div className="text-danger">{errors.reservePrice}</div>}
-                <span className="" style={{ fontSize: '14px ', color: 'gray' }}>
-                  The minimum price per token necessary to bid on this auction.
-                </span>
-              </Form.Group>
-              <Form.Group>
-                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                  <Form.Label>Auction Duration<span className="text-[red]">*</span></Form.Label>
-                  <Form.Select aria-label="" onChange={handleAuctionDurationChange} value={auctionDuration}>
-                    <option value="">Select a duration</option>
-                    <option value="3600">1 Hour</option>
-                    <option value="86400">1 Day</option>
-                    <option value="259200">3 Days</option>
-                    <option value="604800">7 Days</option>
-                    <option value="2629800">1 Month</option>
-                  </Form.Select>
-                  {errors.auctionDuration && <div className="text-danger">{errors.auctionDuration}</div>}
-                  <span className="" style={{ fontSize: '14px ', color: 'gray' }}>
-                    The duration of this auction.
-                  </span>
-                </Form.Group>
-              </Form.Group>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose2}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={handleCreateAuction}>
-              Create Auction
-            </Button>
-          </Modal.Footer>
-        </Modal>
       </div>
       <div className="px-20 mt-5">
-
         {/* show nft of account */}
-        <div className={`${option === "nft" ? "" : "hidden"} w-full flex gap-3 flex-wrap`}>
+        <div
+          className={`${
+            option === "nft" ? "" : "hidden"
+          } w-full flex gap-3 flex-wrap`}
+        >
           {option === "nft" && newNFT
             ? newNFT.map((nft) => {
                 return (
@@ -526,9 +442,285 @@ function Account() {
                     </div>
                     <div className="h-[90px] w-full pl-5 text-white flex gap-1 flex-col my-0 pr-2">
                       <p className="font-bold text-[18px] my-0">{nft.name}</p>
-                      <span className="font-medium text-[16px] my-0">Type: {nft.tokenType}</span>
-                      <p className="flex w-full justify-end">Supply: {nft.balance}</p>
+                      <span className="font-medium text-[16px] my-0">
+                        Type: {nft.tokenType}
+                      </span>
+                      <p className="flex w-full justify-end">
+                        Supply: {nft.balance}
+                      </p>
                     </div>
+                    <Modal
+                      show={show}
+                      onHide={handleClose}
+                      className="hover:block fixed"
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Create Direct Listing</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="exampleForm.ControlInput1"
+                          >
+                            <Form.Label>
+                              Listing Currency{" "}
+                              <span className="text-[red]">*</span>
+                            </Form.Label>
+                            <Form.Select
+                              aria-label=""
+                              onChange={handleListingCurrencyChange2}
+                              value={listingCurrency1}
+                            >
+                              <option value="">Select a currency</option>
+                              <option value="matic">MATIC (MATIC)</option>
+                            </Form.Select>
+                            {errors1.listingCurrency1 && (
+                              <div className="text-danger">
+                                {errors1.listingCurrency1}
+                              </div>
+                            )}
+                            <span
+                              className=""
+                              style={{ fontSize: "14px ", color: "gray" }}
+                            >
+                              The currency you want to sell your tokens for.
+                            </span>
+                          </Form.Group>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="exampleForm.ControlInput1"
+                          >
+                            <Form.Label>
+                              Listing Price<span className="text-[red]">*</span>
+                            </Form.Label>
+                            <Form.Control
+                              aria-label=""
+                              type="text"
+                              placeholder="0"
+                              onChange={handleListingPriceChange2}
+                              value={listingPrice}
+                            ></Form.Control>
+                            {errors1.listingPrice && (
+                              <div className="text-danger">
+                                {errors1.listingPrice}
+                              </div>
+                            )}
+                            <span
+                              className=""
+                              style={{ fontSize: "14px ", color: "gray" }}
+                            >
+                              The price per token a buyer can pay to instantly
+                              buyout the auction.
+                            </span>
+                          </Form.Group>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="exampleForm.ControlInput1"
+                          >
+                            <Form.Label>
+                              Quantity <span className="text-[red]">*</span>
+                            </Form.Label>
+                            <Form.Control
+                              aria-label=""
+                              type="text"
+                              placeholder="1"
+                              onChange={handleQuantityChange2}
+                              value={quantity1}
+                            ></Form.Control>
+                            {errors1.quantity1 && (
+                              <div className="text-danger">
+                                {errors1.quantity1}
+                              </div>
+                            )}
+                            <span
+                              className=""
+                              style={{ fontSize: "14px ", color: "gray" }}
+                            >
+                              The number of tokens to list for sale.
+                            </span>
+                          </Form.Group>
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                          Cancel
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={handleCreateDirectListing2}
+                        >
+                          Create Direct Listing
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                    {/*========================Create Auction===============================*/}
+                    <Modal
+                      show={show2}
+                      onHide={handleClose2}
+                      className="mt-[80px] overflow-scroll"
+                      style={{ maxHeight: "100vh" }}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Create Auction New</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="exampleForm.ControlInput1"
+                          >
+                            <Form.Label>
+                              Listing Currency{" "}
+                              <span className="text-[red]">*</span>
+                            </Form.Label>
+                            <Form.Select
+                              aria-label=""
+                              onChange={handleListingCurrencyChange}
+                              value={listingCurrency}
+                            >
+                              <option value="">Select a currency</option>
+                              <option value="matic">MATIC (MATIC)</option>
+                            </Form.Select>
+                            {errors.listingCurrency && (
+                              <div className="text-danger">
+                                {errors.listingCurrency}
+                              </div>
+                            )}
+                            <span
+                              className=""
+                              style={{ fontSize: "14px ", color: "gray" }}
+                            >
+                              The currency you want to sell your tokens for.
+                            </span>
+                          </Form.Group>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="exampleForm.ControlInput1"
+                          >
+                            <Form.Label>
+                              Buyout Price Per Token{" "}
+                              <span className="text-[red]">*</span>
+                            </Form.Label>
+                            <Form.Control
+                              aria-label=""
+                              type="text"
+                              placeholder="0"
+                              onChange={handleBuyoutPriceChange}
+                              value={buyoutPrice}
+                            ></Form.Control>
+                            {errors.buyoutPrice && (
+                              <div className="text-danger">
+                                {errors.buyoutPrice}
+                              </div>
+                            )}
+                            <span
+                              className=""
+                              style={{ fontSize: "14px ", color: "gray" }}
+                            >
+                              The price per token a buyer can pay to instantly
+                              buyout the auction.
+                            </span>
+                          </Form.Group>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="exampleForm.ControlInput1"
+                          >
+                            <Form.Label>
+                              Quantity <span className="text-[red]">*</span>
+                            </Form.Label>
+                            <Form.Control
+                              aria-label=""
+                              type="text"
+                              placeholder="1"
+                              onChange={handleQuantityChange}
+                              value={quantity}
+                            ></Form.Control>
+                            {errors.quantity && (
+                              <div className="text-danger">
+                                {errors.quantity}
+                              </div>
+                            )}
+                            <span
+                              className=""
+                              style={{ fontSize: "14px ", color: "gray" }}
+                            >
+                              The number of tokens to list for sale.
+                            </span>
+                          </Form.Group>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="exampleForm.ControlInput1"
+                          >
+                            <Form.Label>
+                              Reserve Price Per Token
+                              <span className="text-[red]">*</span>
+                            </Form.Label>
+                            <Form.Control
+                              aria-label=""
+                              type="text"
+                              placeholder="1"
+                              onChange={handleReservePriceChange}
+                              value={reservePrice}
+                            ></Form.Control>
+                            {errors.reservePrice && (
+                              <div className="text-danger">
+                                {errors.reservePrice}
+                              </div>
+                            )}
+                            <span
+                              className=""
+                              style={{ fontSize: "14px ", color: "gray" }}
+                            >
+                              The minimum price per token necessary to bid on
+                              this auction.
+                            </span>
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Group
+                              className="mb-3"
+                              controlId="exampleForm.ControlInput1"
+                            >
+                              <Form.Label>
+                                Auction Duration
+                                <span className="text-[red]">*</span>
+                              </Form.Label>
+                              <Form.Select
+                                aria-label=""
+                                onChange={handleAuctionDurationChange}
+                                value={auctionDuration}
+                              >
+                                <option value="">Select a duration</option>
+                                <option value="3600">1 Hour</option>
+                                <option value="86400">1 Day</option>
+                                <option value="259200">3 Days</option>
+                                <option value="604800">7 Days</option>
+                                <option value="2629800">1 Month</option>
+                              </Form.Select>
+                              {errors.auctionDuration && (
+                                <div className="text-danger">
+                                  {errors.auctionDuration}
+                                </div>
+                              )}
+                              <span
+                                className=""
+                                style={{ fontSize: "14px ", color: "gray" }}
+                              >
+                                The duration of this auction.
+                              </span>
+                            </Form.Group>
+                          </Form.Group>
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose2}>
+                          Cancel
+                        </Button>
+                        <Button variant="primary" onClick={handleCreateAuction}>
+                          Create Auction
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
                   </div>
                 );
               })
@@ -544,7 +736,9 @@ function Account() {
                 <>
                   <div
                     key={index}
-                    className={`${listing.status == 3 ? "hidden" : ""} ${listing.creatorAddress == inputString ? "" : "hidden"}`}
+                    className={`${listing.status == 3 ? "hidden" : ""} ${
+                      listing.creatorAddress == inputString ? "" : "hidden"
+                    }`}
                   >
                     <Link to={`/nft/${index}`}>
                       <Card
@@ -561,24 +755,33 @@ function Account() {
             : "Loading listing"}
         </div>
         {/* Auction */}
-        <div className={`${option === "auc" ? "" : "hidden"} w-full flex gap-3`}>
-        {auction ? auction.map((listing, index) => (
-            <>
-              <div key={index} className={`${listing.status == 3 ? "hidden" : ""} ${listing.creatorAddress == inputString ? "" : "hidden"}`}>
-                <Link to={`/auction/${listing.id}`}>
-                  <Auction
-                    id={listing.id}
-                    img={listing.asset.image}
-                    name={listing.asset.name}
-                    creatorAddress={listing.creatorAddress}
-                    price={listing.pricePerToken}
-                    status={listing.status}
-                    startTime={listing.startTimeInSeconds}
-                  />
-                </Link>
-              </div>
-            </>
-          )) : "Loading"}
+        <div
+          className={`${option === "auc" ? "" : "hidden"} w-full flex gap-3`}
+        >
+          {auction
+            ? auction.map((listing, index) => (
+                <>
+                  <div
+                    key={index}
+                    className={`${listing.status == 3 ? "hidden" : ""} ${
+                      listing.creatorAddress == inputString ? "" : "hidden"
+                    }`}
+                  >
+                    <Link to={`/auction/${listing.id}`}>
+                      <Auction
+                        id={listing.id}
+                        img={listing.asset.image}
+                        name={listing.asset.name}
+                        creatorAddress={listing.creatorAddress}
+                        price={listing.pricePerToken}
+                        status={listing.status}
+                        startTime={listing.startTimeInSeconds}
+                      />
+                    </Link>
+                  </div>
+                </>
+              ))
+            : "Loading"}
         </div>
       </div>
       {/* </div> */}
