@@ -28,6 +28,7 @@
     "react-router-dom": "^6.21.0",
     "react-scripts": "5.0.1",
     "stream": "^0.0.2",
+    "sweetalert2": "^11.10.1",
     "url": "latest",
     "web-vitals": "^2.1.4",
     "zlib": "npm:browserify-zlib"

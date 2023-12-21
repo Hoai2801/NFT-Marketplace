@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NATIVE_TOKEN_ADDRESS, ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { Link, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import {
   metamaskWallet,
   useAddress,
@@ -28,7 +29,10 @@ import "../CSS/DetailNFT.css";
 const contractAddress = "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36";
 
 const DetailNFT = () => {
+  const signer = useSigner();
   // get id from the url
+  const [balance, setBalance] = useState();
+
   const { id } = useParams();
   const { contract } = useContract(contractAddress, "marketplace-v3");
   const address = useAddress();
@@ -39,6 +43,7 @@ const DetailNFT = () => {
 
   // conver wei to ether
   const price = listing ? ethers.utils.formatEther(listing.pricePerToken) : "";
+
   const {
     mutateAsync: buyDirectListing,
     isLoading,
@@ -46,6 +51,7 @@ const DetailNFT = () => {
   } = useBuyDirectListing(contract);
 
   // cancel the derect listing
+
   const {
     mutateAsync: cancelDirectListing,
     isCanelLoading,
@@ -59,17 +65,21 @@ const DetailNFT = () => {
           clientId: "598b4f1195f15842446b09538ba00622",
         });
 
-        // const history = 1;
-        // setHistory(history)
-        
+        const sdkBalance = new ThirdwebSDK(signer, "eth", {
+          clientId: "598b4f1195f15842446b09538ba00622",
+        });
+
+        const balance = await sdkBalance.wallet.balance();
+
+        setBalance(balance ? balance.displayValue : 0);
         // market
         const contractMarket = await sdk.getContract(
           "0x5237bcc6f1848CDdF2785a12e1114Cd639895e36"
-          );
-          
-          // get listing detail
-          const listing = await contractMarket.directListings.getListing(id);
-          setListing(listing);
+        );
+
+        // get listing detail
+        const listing = await contractMarket.directListings.getListing(id);
+        setListing(listing);
 
         // api get MATIC price
         const price = await axios.get(
@@ -85,15 +95,26 @@ const DetailNFT = () => {
   }, [id]);
   const [isPopup, setIsPopup] = useState(false);
   // buy the nft
-  const BuyNFT = async () => {
+  const BuyNFT = async (e) => {
     if (address == null) {
       await connectWallet();
     } else {
-      buyDirectListing({
-        listingId: listing.id, // ID of the listing to buy
-        quantity: "1",
-        buyer: address, // Wallet to buy for
-      });
+      try {
+        if (balance < priceMATIC) {
+          e.preventdefault();
+        }
+        buyDirectListing({
+          listingId: listing.id, // ID of the listing to buy
+          quantity: "1",
+          buyer: address, // Wallet to buy for
+        });
+      } catch (error) {
+        Swal.fire({
+          title: "Good job!",
+          text: "Please try again  :)))",
+          icon: "error",
+        });
+      }
     }
   };
   const hanldeClosePopup = () => {
@@ -106,7 +127,7 @@ const DetailNFT = () => {
     await connect(metamaskWallet());
   };
 
-  console.log(listing)
+  console.log(listing);
 
   return (
     <div className="mt-5">

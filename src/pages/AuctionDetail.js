@@ -110,7 +110,7 @@ const AuctionDetail = () => {
     };
 
     fetchData();
-  }, [id, secondsRemaining, countdown, signer]);  
+  }, [id, secondsRemaining, countdown, signer]);
 
   // convert second to date
   function convertSecondsToDate(seconds) {
@@ -187,7 +187,6 @@ const AuctionDetail = () => {
     // Update countdown every second
     setTimeout(() => countdown(endTimeInSeconds), 1000);
   }
-
 
   return (
     <div className="mt-5">
@@ -331,7 +330,7 @@ const AuctionDetail = () => {
                                     : ""
                                 }`}
                               >
-                                Make a bid 
+                                Make a bid
                               </button>
                             )}
                             {/* Popup */}
@@ -343,8 +342,17 @@ const AuctionDetail = () => {
                                     onClick={hanldeClosePopup}
                                   />
                                   <div className="w-full h-full flex flex-col justify-center items-center">
-                                    <p className="my-2 text-[18px]">How many <span className="font-bold text-[18px]">Matic</span> you want to bid for <span className="font-bold text-[18px]">{listing.asset.name}</span></p>
-                                    
+                                    <p className="my-2 text-[18px]">
+                                      How many{" "}
+                                      <span className="font-bold text-[18px]">
+                                        Matic
+                                      </span>{" "}
+                                      you want to bid for{" "}
+                                      <span className="font-bold text-[18px]">
+                                        {listing.asset.name}
+                                      </span>
+                                    </p>
+
                                     <input
                                       onChange={hanldeInputBid}
                                       type="number"
